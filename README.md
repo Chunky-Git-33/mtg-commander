@@ -2,7 +2,7 @@
 
 A free, offline-capable MTG Commander companion app for new players.
 
-**Live app:** https://YOUR-USERNAME.github.io/mtg-commander
+**Live app:** https://chunky-git-33.github.io/mtg-commander
 
 ## Features
 - 📋 **Turn Guide** — Full phase-by-phase breakdown with priority indicators
