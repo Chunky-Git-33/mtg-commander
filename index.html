@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Commander Companion</title>
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- iOS / Safari PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Commander">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+
+<!-- Android / Theme -->
+<meta name="theme-color" content="#1a5fa8">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- SEO / Share -->
+<meta name="description" content="The ultimate MTG Commander companion — turn guide, life tracker, keyword glossary and interaction checker. Works offline.">
+<meta property="og:title" content="Commander Companion">
+<meta property="og:description" content="Free MTG Commander app — life tracker, turn guide, keyword glossary. Works offline on any device.">
+<meta property="og:type" content="website">
+
+<style>
+:root {
+  --accent: #4a9eff;
+  --accent-light: #7dbfff;
+  --accent-dark: #1a5fa8;
+  --accent-faint: rgba(74,158,255,0.1);
+  --accent-faint2: rgba(74,158,255,0.06);
+  --ink: #060c14;
+  --ink2: #0b1420;
+  --ink3: #0f1c2e;
+  --parch: #c8dff5;
+  --red: #c0392b;
+  --red-faint: rgba(192,57,43,0.15);
+  --green: #27ae60;
+  --green-faint: rgba(39,174,96,0.15);
+  --warn: #e67e22;
+  --text: #ffffff;
+  --text-light: #c0d8f0;
+  --text-bright: #ffffff;
+  --border: rgba(74,158,255,0.2);
+  --tab-h: 64px;
+  --radius: 6px;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; font-family:'Palatino','Book Antiqua',Georgia,serif; background:var(--ink); color:var(--text); overflow:hidden; }
+
+.app { display:flex; flex-direction:column; height:100vh; max-width:480px; margin:0 auto; background:var(--ink2); box-shadow:0 0 80px rgba(0,0,0,0.9),0 0 30px rgba(74,158,255,0.05); }
+
+/* HEADER */
+.app-header { background:linear-gradient(135deg,#060c14 0%,#0d1e35 50%,#060c14 100%); border-bottom:2px solid var(--accent-dark); padding:12px 18px 10px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; position:relative; overflow:hidden; }
+.app-header::after { content:''; position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(74,158,255,0.03) 40px,rgba(74,158,255,0.03) 41px); pointer-events:none; }
+.header-title { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:1.1rem; font-weight:900; color:var(--accent-light); letter-spacing:0.06em; text-shadow:0 2px 12px rgba(74,158,255,0.4); line-height:1; }
+.header-sub { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.48rem; color:rgba(74,158,255,0.4); letter-spacing:0.2em; text-transform:uppercase; margin-top:3px; }
+.turn-badge { background:rgba(74,158,255,0.08); border:1.5px solid var(--accent-dark); border-radius:4px; padding:4px 12px; font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.58rem; color:var(--accent); letter-spacing:0.1em; text-align:center; }
+.turn-badge span { display:block; font-size:1.1rem; font-weight:900; color:var(--accent-light); line-height:1; }
+
+/* CONTENT */
+.content { flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; background:var(--ink2); background-image:radial-gradient(ellipse at 50% 0%,rgba(74,158,255,0.05) 0%,transparent 60%); }
+.tab-panel { display:none; padding:14px; }
+.tab-panel.active { display:block; }
+
+/* TAB BAR */
+.tab-bar { display:grid; grid-template-columns:repeat(4,1fr); background:#060c14; border-top:2px solid var(--accent-dark); flex-shrink:0; height:var(--tab-h); }
+.tab-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; border:none; background:transparent; cursor:pointer; padding:8px 4px; border-top:3px solid transparent; transition:all 0.2s; }
+.tab-btn.active { background:rgba(74,158,255,0.08); border-top-color:var(--accent); }
+.tab-btn .tab-icon { font-size:1.2rem; line-height:1; }
+.tab-btn .tab-label { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.48rem; letter-spacing:0.1em; color:rgba(255,255,255,0.5); text-transform:uppercase; transition:color 0.2s; }
+.tab-btn.active .tab-label { color:#ffffff; }
+
+/* SECTION HEAD */
+.sec-head { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.62rem; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent-dark); border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:12px; margin-top:18px; display:flex; align-items:center; gap:8px; }
+.sec-head:first-child { margin-top:0; }
+
+/* PHASE BLOCKS */
+.phase-block { margin-bottom:7px; border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); background:var(--ink3); }
+.phase-header { background:linear-gradient(90deg,rgba(74,158,255,0.12),rgba(74,158,255,0.04)); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; transition:background 0.2s; }
+.phase-header:active { background:rgba(74,158,255,0.2); }
+.phase-header-left { display:flex; align-items:center; gap:10px; }
+.phase-num { width:24px; height:24px; border-radius:50%; border:1.5px solid var(--accent-dark); display:flex; align-items:center; justify-content:center; font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.6rem; font-weight:600; color:var(--accent); flex-shrink:0; }
+.phase-name { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.75rem; font-weight:600; color:var(--accent-light); letter-spacing:0.06em; }
+.phase-chevron { color:var(--accent-dark); font-size:0.7rem; transition:transform 0.25s; }
+.phase-header.open .phase-chevron { transform:rotate(180deg); }
+.phase-body { display:none; background:rgba(6,12,20,0.7); padding:12px 14px; }
+.phase-body.open { display:block; }
+
+.step-row { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid rgba(74,158,255,0.08); }
+.step-row:last-child { border-bottom:none; padding-bottom:0; }
+.step-dot { width:8px; height:8px; border-radius:50%; border:1.5px solid; flex-shrink:0; margin-top:4px; }
+.dot-open   { border-color:var(--green); background:var(--green-faint); }
+.dot-closed { border-color:var(--red); background:var(--red-faint); }
+.dot-special{ border-color:var(--accent-dark); background:var(--accent-faint); }
+.step-content { flex:1; }
+.step-title { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.72rem; font-weight:600; color:var(--text-bright); margin-bottom:3px; }
+.step-desc { font-size:0.8rem; color:var(--text-light); line-height:1.45; }
+.step-tip { margin-top:5px; background:rgba(74,158,255,0.07); border-left:2px solid var(--accent-dark); padding:5px 8px; font-size:0.72rem; color:var(--accent-dark); font-style:italic; border-radius:0 3px 3px 0; line-height:1.35; }
+.priority-pill { display:inline-flex; align-items:center; gap:4px; font-size:0.58rem; font-family:'Palatino','Book Antiqua',Georgia,serif; letter-spacing:0.08em; padding:2px 7px; border-radius:20px; margin-top:4px; }
+.pill-open   { background:var(--green-faint); color:var(--green); border:1px solid rgba(39,174,96,0.3); }
+.pill-closed { background:var(--red-faint); color:#e07070; border:1px solid rgba(192,57,43,0.3); }
+
+/* END TURN BUTTON */
+.end-turn-btn { width:100%; margin-top:10px; padding:14px; background:linear-gradient(135deg,rgba(74,158,255,0.18),rgba(74,158,255,0.08)); border:1.5px solid var(--accent-dark); border-radius:var(--radius); color:var(--accent-light); font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.8rem; font-weight:600; letter-spacing:0.15em; cursor:pointer; text-align:center; text-transform:uppercase; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 0 20px rgba(74,158,255,0.1); }
+.end-turn-btn:active { background:rgba(74,158,255,0.35); transform:scale(0.98); }
+
+/* RULE BOX */
+.rule-box { background:var(--accent-faint2); border:1px solid var(--border); border-radius:5px; padding:9px 12px; font-size:0.82rem; color:var(--text-light); line-height:1.45; margin-bottom:7px; }
+.rule-box strong { color:var(--text-bright); }
+
+/* LIFE TRACKER */
+.life-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+.life-card { background:linear-gradient(135deg,var(--ink3),var(--ink2)); border:1.5px solid var(--border); border-radius:var(--radius); padding:10px; display:flex; flex-direction:column; align-items:center; gap:5px; position:relative; overflow:hidden; }
+.life-card.eliminated { opacity:0.45; border-color:rgba(192,57,43,0.3); }
+.life-card.eliminated::after { content:'ELIMINATED'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-15deg); font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.6rem; font-weight:900; color:var(--red); letter-spacing:0.12em; border:2px solid var(--red); padding:3px 8px; opacity:0.85; background:rgba(6,12,20,0.8); border-radius:2px; }
+.player-name-input { background:transparent; border:none; border-bottom:1px solid var(--border); color:var(--accent); font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.62rem; letter-spacing:0.1em; text-align:center; width:100%; outline:none; padding:2px 4px; }
+.life-display { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:2.6rem; font-weight:900; color:var(--accent-light); line-height:1; text-shadow:0 2px 14px rgba(74,158,255,0.35); }
+.life-display.danger  { color:#e07070; text-shadow:0 2px 12px rgba(192,57,43,0.4); }
+.life-display.warning { color:var(--warn); }
+.life-btns { display:flex; gap:5px; align-items:center; }
+.life-btn { width:30px; height:30px; border-radius:50%; border:1.5px solid var(--accent-dark); background:var(--accent-faint); color:var(--accent); font-size:1rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.life-btn:active { background:rgba(74,158,255,0.3); transform:scale(0.9); }
+.life-btn.minus { border-color:rgba(192,57,43,0.5); color:#e07070; background:var(--red-faint); }
+.life-btn.minus:active { background:rgba(192,57,43,0.3); }
+.life-btn.sm { width:26px; height:26px; font-size:0.6rem; }
+
+/* COMMANDER DAMAGE */
+.cmdr-dmg-section { margin-top:4px; width:100%; }
+.cmdr-dmg-label { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.44rem; letter-spacing:0.08em; color:rgba(74,158,255,0.35); text-align:center; margin-bottom:4px; text-transform:uppercase; }
+.cmdr-dmg-row { display:flex; justify-content:space-between; gap:3px; }
+.cmdr-pip { flex:1; background:rgba(74,158,255,0.05); border:1px solid rgba(74,158,255,0.15); border-radius:4px; padding:4px 2px; text-align:center; cursor:pointer; transition:all 0.15s; min-width:0; }
+.cmdr-pip:active { background:rgba(74,158,255,0.25); }
+.cmdr-pip-name { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.38rem; color:rgba(255,255,255,0.7); display:block; white-space:normal; overflow:hidden; text-overflow:ellipsis; padding:0 1px; margin-bottom:1px; line-height:1.2; word-break:break-word; }
+.cmdr-pip-val { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.9rem; font-weight:700; color:var(--accent); line-height:1.1; display:block; }
+.cmdr-pip-val.danger { color:#e07070; }
+.cmdr-pip-val.warn   { color:var(--warn); }
+.cmdr-pip-hint { font-size:0.36rem; color:rgba(74,158,255,0.2); font-family:'Palatino','Book Antiqua',Georgia,serif; display:block; }
+
+.tracker-controls { display:flex; gap:6px; margin-bottom:12px; }
+.ctrl-btn { flex:1; background:var(--accent-faint2); border:1px solid var(--border); border-radius:var(--radius); color:var(--accent); font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.52rem; letter-spacing:0.06em; padding:8px 4px; cursor:pointer; text-align:center; transition:all 0.15s; }
+.ctrl-btn:active { background:var(--accent-faint); }
+.ctrl-btn.danger-btn { border-color:rgba(192,57,43,0.3); color:#e07070; background:var(--red-faint); }
+
+.poison-row { display:flex; gap:4px; flex-wrap:wrap; justify-content:center; margin-top:4px; }
+.poison-counter { width:25px; height:25px; border-radius:50%; border:1.5px solid rgba(74,158,255,0.2); background:rgba(74,158,255,0.04); display:flex; align-items:center; justify-content:center; font-size:0.5rem; font-family:'Palatino','Book Antiqua',Georgia,serif; color:rgba(74,158,255,0.3); cursor:pointer; transition:all 0.15s; }
+.poison-counter.filled { background:rgba(80,160,60,0.25); border-color:rgba(100,180,80,0.6); color:#80d060; }
+.poison-counter.filled.lethal { background:rgba(192,57,43,0.25); border-color:rgba(224,112,112,0.6); color:#e07070; }
+
+/* INTERACTIONS */
+.search-input { width:100%; background:var(--accent-faint2); border:1.5px solid var(--border); border-radius:var(--radius); color:var(--text-bright); font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.95rem; padding:10px 14px 10px 36px; outline:none; transition:border-color 0.2s; }
+.search-input::placeholder { color:rgba(74,158,255,0.25); }
+.search-input:focus { border-color:var(--accent); }
+.search-wrap { position:relative; margin-bottom:12px; }
+.search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--accent-dark); font-size:0.9rem; pointer-events:none; }
+.kw-chips { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:12px; }
+.kw-chip { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.52rem; letter-spacing:0.08em; padding:5px 9px; border-radius:20px; cursor:pointer; border:1px solid var(--border); background:var(--accent-faint2); color:var(--accent); transition:all 0.15s; user-select:none; }
+.kw-chip:active,.kw-chip.selected { background:rgba(74,158,255,0.25); border-color:var(--accent); }
+.interaction-result { background:var(--ink3); border:1.5px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:8px; }
+.ir-head { padding:10px 14px; background:rgba(74,158,255,0.08); display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.ir-keywords { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.7rem; font-weight:600; color:var(--text-bright); display:flex; align-items:center; gap:5px; flex-wrap:wrap; flex:1; }
+.ir-vs { color:var(--accent-dark); font-weight:400; }
+.verdict { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.48rem; letter-spacing:0.1em; padding:3px 8px; border-radius:20px; text-transform:uppercase; white-space:nowrap; flex-shrink:0; }
+.verdict-wins    { background:var(--green-faint); color:var(--green); border:1px solid rgba(39,174,96,0.35); }
+.verdict-loses   { background:var(--red-faint); color:#e07070; border:1px solid rgba(192,57,43,0.35); }
+.verdict-depends { background:rgba(230,126,34,0.15); color:var(--warn); border:1px solid rgba(230,126,34,0.35); }
+.ir-body { padding:10px 14px; }
+.ir-explanation { font-size:0.83rem; color:var(--text-light); line-height:1.5; margin-bottom:6px; }
+.ir-rule { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.5rem; color:var(--accent-dark); letter-spacing:0.08em; }
+.ir-example { margin-top:6px; background:var(--accent-faint2); border-left:2px solid var(--accent-dark); padding:6px 10px; font-size:0.76rem; color:var(--text-light); font-style:italic; border-radius:0 3px 3px 0; line-height:1.4; }
+.no-results { text-align:center; padding:30px 20px; color:var(--text-light); font-style:italic; font-size:0.9rem; }
+
+/* GLOSSARY */
+.gloss-card { background:var(--ink3); border:1px solid var(--border); border-radius:var(--radius); margin-bottom:6px; overflow:hidden; }
+.gloss-head { padding:10px 14px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; transition:background 0.15s; }
+.gloss-head:active { background:var(--accent-faint); }
+.gloss-name { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.82rem; font-weight:600; color:var(--text-bright); }
+.gloss-tags { display:flex; align-items:center; gap:6px; }
+.diff-tag { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.46rem; letter-spacing:0.1em; padding:2px 6px; border-radius:20px; text-transform:uppercase; }
+.diff-common   { background:var(--green-faint); color:var(--green); border:1px solid rgba(39,174,96,0.3); }
+.diff-moderate { background:rgba(230,126,34,0.15); color:var(--warn); border:1px solid rgba(230,126,34,0.3); }
+.diff-advanced { background:var(--red-faint); color:#e07070; border:1px solid rgba(192,57,43,0.3); }
+.gloss-rule-num { font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.5rem; color:var(--accent-dark); letter-spacing:0.06em; }
+.gloss-chev { color:var(--accent-dark); font-size:0.65rem; margin-left:4px; transition:transform 0.2s; display:inline-block; }
+.gloss-chev.open { transform:rotate(180deg); }
+.gloss-body { display:none; padding:0 14px 12px; border-top:1px solid rgba(74,158,255,0.08); }
+.gloss-body.open { display:block; padding-top:10px; }
+.gloss-def { font-size:0.84rem; color:var(--text-light); line-height:1.5; }
+.gloss-warning { font-size:0.73rem; color:#c07060; font-style:italic; line-height:1.4; padding:5px 8px; background:var(--red-faint); border-left:2px solid rgba(192,57,43,0.5); border-radius:0 3px 3px 0; margin-top:5px; }
+.gloss-tip { font-size:0.73rem; color:#60a080; font-style:italic; line-height:1.4; padding:5px 8px; background:var(--green-faint); border-left:2px solid rgba(39,174,96,0.4); border-radius:0 3px 3px 0; margin-top:5px; }
+
+.content::-webkit-scrollbar { width:3px; }
+.content::-webkit-scrollbar-thumb { background:var(--accent-dark); border-radius:2px; }
+
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);} }
+.tab-panel.active { animation:fadeIn 0.2s ease; }
+
+.toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink3); color:var(--text-bright); font-family:'Palatino','Book Antiqua',Georgia,serif; font-size:0.65rem; letter-spacing:0.1em; padding:8px 18px; border-radius:20px; opacity:0; transition:all 0.3s; pointer-events:none; z-index:100; white-space:nowrap; border:1px solid var(--accent-dark); box-shadow:0 4px 20px rgba(74,158,255,0.25); }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+.mana-sym { width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.55rem;font-weight:700;color:white;text-shadow:0 1px 2px rgba(0,0,0,0.5); }
+.sym-W{background:radial-gradient(circle at 35% 35%,#f5e8b0,#c8aa5a);color:#3d2e00;}
+.sym-U{background:radial-gradient(circle at 35% 35%,#6aabff,#1a5dbf);}
+.sym-B{background:radial-gradient(circle at 35% 35%,#7a6088,#2e1f3d);}
+.sym-R{background:radial-gradient(circle at 35% 35%,#ff8a5c,#c02a00);}
+.sym-G{background:radial-gradient(circle at 35% 35%,#5ec46a,#1a5c27);}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="app-header">
+    <div>
+      <div class="header-title">⚔ COMMANDER</div>
+      <div class="header-sub">New Player Companion</div>
+    </div>
+    <div class="turn-badge">TURN<span id="turn-num">1</span></div>
+  </div>
+
+  <div class="content">
+
+    <!-- TURN GUIDE -->
+    <div class="tab-panel active" id="panel-turn">
+      <div style="background:var(--accent-faint2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:12px;font-size:0.8rem;color:var(--text-light);line-height:1.5;">
+        <strong style="color:var(--accent);font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.62rem;letter-spacing:0.1em;">HOW TO USE</strong><br>
+        Tap each phase to expand. <span style="color:var(--green);">●</span> Green = responses allowed. <span style="color:#e07070;">●</span> Red = no responses.
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num">①</div><div class="phase-name">Beginning Phase</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-closed"></div><div class="step-content"><div class="step-title">Untap Step</div><div class="step-desc">Untap ALL your permanents. Nobody can cast spells or activate abilities.</div><div class="priority-pill pill-closed">✕ No responses</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Upkeep Step</div><div class="step-desc">"At the beginning of your upkeep" effects trigger here. Everyone may respond.</div><div class="step-tip">💡 Last chance to act before you draw your card.</div><div class="priority-pill pill-open">✓ Priority open</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Draw Step</div><div class="step-desc">Draw 1 card. Everyone may respond after.</div><div class="priority-pill pill-open">✓ Priority open</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num">②</div><div class="phase-name">Pre-Combat Main Phase</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Play a Land (optional)</div><div class="step-desc">One land per turn, from your hand. Lands are not spells — they cannot be countered.</div><div class="step-tip">💡 Only during YOUR main phase with an empty stack.</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Cast Spells</div><div class="step-desc">Cast creatures, sorceries, instants, artifacts, enchantments, planeswalkers. Pay the mana cost shown top-right.</div><div class="step-tip">💡 Mana empties at end of phase — use it or lose it!</div><div class="priority-pill pill-open">✓ Priority open</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num">③</div><div class="phase-name">Combat Phase</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Beginning of Combat</div><div class="step-desc">"At the beginning of combat" triggers fire. Before attackers are chosen.</div><div class="step-tip">💡 Last chance to tap opponent's creatures before they can attack!</div><div class="priority-pill pill-open">✓ Priority open</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Declare Attackers</div><div class="step-desc">Choose which creatures attack and who they target. Attackers tap unless they have Vigilance. In Commander you can attack different opponents with different creatures!</div><div class="priority-pill pill-open">✓ Priority opens after</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Declare Blockers</div><div class="step-desc">Defending players choose blockers. Blockers do NOT tap. If multiple creatures block one attacker, you choose the damage order.</div><div class="step-tip">💡 Each creature can only block one attacker.</div><div class="priority-pill pill-open">✓ Priority opens after</div></div></div>
+          <div class="step-row"><div class="step-dot dot-special"></div><div class="step-content"><div class="step-title">First Strike Damage <em style="font-weight:400;font-size:0.7rem;">(if any)</em></div><div class="step-desc">Only if any creature has First Strike or Double Strike. They deal damage before everyone else.</div><div class="priority-pill pill-open">✓ Priority opens after</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Combat Damage</div><div class="step-desc">All remaining creatures deal damage simultaneously. Creatures with lethal damage die via state-based actions.</div><div class="step-tip">💡 Both creatures can kill each other at the same time — damage is simultaneous!</div><div class="priority-pill pill-open">✓ Priority opens after</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">End of Combat</div><div class="step-desc">"At end of combat" effects trigger. Creatures leave combat.</div><div class="priority-pill pill-open">✓ Priority open</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num">④</div><div class="phase-name">Post-Combat Main Phase</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Cast More Spells</div><div class="step-desc">Same as the first main phase. Play a land if you haven't yet.</div><div class="step-tip">💡 Often better to cast big creatures AFTER combat — opponents can't kill them before they attack.</div><div class="priority-pill pill-open">✓ Priority open</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num">⑤</div><div class="phase-name">Ending Phase</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">End Step</div><div class="step-desc">"At the beginning of the end step" triggers fire. Last chance for everyone to cast instants.</div><div class="priority-pill pill-open">✓ Priority open</div></div></div>
+          <div class="step-row"><div class="step-dot dot-closed"></div><div class="step-content"><div class="step-title">Cleanup Step</div><div class="step-desc">Discard to 7 cards. Remove all damage from creatures. End "until end of turn" effects. Pass the turn.</div><div class="priority-pill pill-closed">✕ No responses normally</div></div></div>
+        </div>
+      </div>
+
+      <!-- END TURN BUTTON -->
+      <button class="end-turn-btn" onclick="endTurn()">⏭&nbsp;&nbsp;End Turn — Pass to Next Player</button>
+
+      <div class="sec-head" style="margin-top:16px;">⚜ Commander Rules</div>
+      <div class="rule-box"><strong>Commander Damage:</strong> If one commander deals 21+ combat damage to you, you lose — regardless of life total. Tracked per commander.</div>
+      <div class="rule-box"><strong>Commander Tax:</strong> Each recast from the command zone costs +{2}. Third cast costs +4 extra mana total.</div>
+      <div class="rule-box"><strong>Zone Replacement:</strong> When your commander would go to graveyard or exile, you may redirect it to the command zone instead.</div>
+      <div class="rule-box" style="margin-bottom:16px;"><strong>Starting Life:</strong> 40 life in Commander (not 20). Poison still kills at 10 counters.</div>
+    </div>
+
+    <!-- LIFE TRACKER -->
+    <div class="tab-panel" id="panel-life">
+      <div class="tracker-controls">
+        <div class="ctrl-btn" onclick="resetLife()">↺ Reset Life</div>
+        <div class="ctrl-btn" onclick="addPlayer()" id="add-player-btn">＋ Player</div>
+        <div class="ctrl-btn danger-btn" onclick="resetAll()">✕ New Game</div>
+      </div>
+      <div class="life-grid" id="life-grid"></div>
+      <div class="sec-head">☠ Poison Counters <span style="font-size:0.52rem;font-weight:400;font-style:italic;color:var(--text-light);">(10 = eliminated)</span></div>
+      <div id="poison-section" style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px;"></div>
+      <div class="sec-head">◈ Mana Reference</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:8px;">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;background:var(--accent-faint2);border:1px solid var(--border);border-radius:4px;"><div class="mana-sym sym-W">W</div><div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.44rem;color:var(--accent-dark);text-align:center;">White<br>Plains</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;background:var(--accent-faint2);border:1px solid var(--border);border-radius:4px;"><div class="mana-sym sym-U">U</div><div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.44rem;color:var(--accent-dark);text-align:center;">Blue<br>Island</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;background:var(--accent-faint2);border:1px solid var(--border);border-radius:4px;"><div class="mana-sym sym-B">B</div><div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.44rem;color:var(--accent-dark);text-align:center;">Black<br>Swamp</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;background:var(--accent-faint2);border:1px solid var(--border);border-radius:4px;"><div class="mana-sym sym-R">R</div><div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.44rem;color:var(--accent-dark);text-align:center;">Red<br>Mountain</div></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;background:var(--accent-faint2);border:1px solid var(--border);border-radius:4px;"><div class="mana-sym sym-G">G</div><div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.44rem;color:var(--accent-dark);text-align:center;">Green<br>Forest</div></div>
+      </div>
+      <div style="font-size:0.72rem;color:var(--text-light);font-style:italic;padding:5px 8px;border-left:2px solid var(--accent-dark);margin-bottom:14px;line-height:1.4;">Mana empties at the end of each step and phase — use it or lose it!</div>
+
+      <!-- FLOATING MANA TRACKER -->
+      <div class="sec-head">◈ Floating Mana Pool</div>
+      <div style="background:var(--ink3);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:16px;">
+        <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.52rem;color:rgba(255,255,255,0.5);letter-spacing:0.1em;text-align:center;margin-bottom:14px;text-transform:uppercase;">Tap + / − on each colour to track your pool</div>
+
+        <!-- 6 COLUMNS: one per mana colour -->
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:14px;">
+
+          <!-- WHITE -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+            <button onclick="changeMana('W',1)" style="width:30px;height:24px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;color:white;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">+</button>
+            <div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f5e8b0,#c8aa5a);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);">
+              <span id="mp-W" style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:1rem;font-weight:900;color:#3d2e00;">0</span>
+            </div>
+            <button onclick="changeMana('W',-1)" style="width:30px;height:24px;background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.3);border-radius:4px;color:#ff9090;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">−</button>
+            <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.42rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">W</div>
+          </div>
+
+          <!-- BLUE -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+            <button onclick="changeMana('U',1)" style="width:30px;height:24px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;color:white;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">+</button>
+            <div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#6aabff,#1a5dbf);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);">
+              <span id="mp-U" style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:1rem;font-weight:900;color:white;text-shadow:0 1px 3px rgba(0,0,0,0.5);">0</span>
+            </div>
+            <button onclick="changeMana('U',-1)" style="width:30px;height:24px;background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.3);border-radius:4px;color:#ff9090;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">−</button>
+            <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.42rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">U</div>
+          </div>
+
+          <!-- BLACK -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+            <button onclick="changeMana('B',1)" style="width:30px;height:24px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;color:white;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">+</button>
+            <div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#9a80aa,#2e1f3d);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);">
+              <span id="mp-B" style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:1rem;font-weight:900;color:white;text-shadow:0 1px 3px rgba(0,0,0,0.5);">0</span>
+            </div>
+            <button onclick="changeMana('B',-1)" style="width:30px;height:24px;background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.3);border-radius:4px;color:#ff9090;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">−</button>
+            <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.42rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">B</div>
+          </div>
+
+          <!-- RED -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+            <button onclick="changeMana('R',1)" style="width:30px;height:24px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;color:white;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">+</button>
+            <div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ff8a5c,#c02a00);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);">
+              <span id="mp-R" style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:1rem;font-weight:900;color:white;text-shadow:0 1px 3px rgba(0,0,0,0.5);">0</span>
+            </div>
+            <button onclick="changeMana('R',-1)" style="width:30px;height:24px;background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.3);border-radius:4px;color:#ff9090;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">−</button>
+            <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.42rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">R</div>
+          </div>
+
+          <!-- GREEN -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+            <button onclick="changeMana('G',1)" style="width:30px;height:24px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;color:white;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">+</button>
+            <div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#5ec46a,#1a5c27);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);">
+              <span id="mp-G" style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:1rem;font-weight:900;color:white;text-shadow:0 1px 3px rgba(0,0,0,0.5);">0</span>
+            </div>
+            <button onclick="changeMana('G',-1)" style="width:30px;height:24px;background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.3);border-radius:4px;color:#ff9090;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">−</button>
+            <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.42rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">G</div>
+          </div>
+
+          <!-- COLOURLESS -->
+          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+            <button onclick="changeMana('C',1)" style="width:30px;height:24px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:4px;color:white;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">+</button>
+            <div style="width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#cccccc,#666);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,255,255,0.3);">
+              <span id="mp-C" style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:1rem;font-weight:900;color:white;text-shadow:0 1px 3px rgba(0,0,0,0.5);">0</span>
+            </div>
+            <button onclick="changeMana('C',-1)" style="width:30px;height:24px;background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.3);border-radius:4px;color:#ff9090;font-size:0.9rem;font-weight:700;cursor:pointer;line-height:1;">−</button>
+            <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.42rem;color:rgba(255,255,255,0.5);letter-spacing:0.05em;">◇</div>
+          </div>
+
+        </div>
+
+        <!-- RESET -->
+        <button onclick="resetMana()" style="width:100%;background:var(--accent-faint2);border:1px solid var(--border);border-radius:var(--radius);color:white;font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.62rem;letter-spacing:0.12em;padding:10px;cursor:pointer;text-transform:uppercase;transition:background 0.15s;" onmouseover="this.style.background='rgba(74,158,255,0.15)'" onmouseout="this.style.background='var(--accent-faint2)'">↺ Reset All Mana to Zero</button>
+      </div>
+    </div>
+
+    <!-- INTERACTIONS -->
+    <div class="tab-panel" id="panel-interact">
+      <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" type="text" placeholder="Search e.g. trample, hexproof..." oninput="filterInteractions(this.value)" id="interact-search"></div>
+      <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.56rem;letter-spacing:0.1em;color:var(--accent-dark);margin-bottom:7px;text-transform:uppercase;">Quick Select</div>
+      <div class="kw-chips">
+        <div class="kw-chip" onclick="chipSearch(this,'Trample')">Trample</div>
+        <div class="kw-chip" onclick="chipSearch(this,'Deathtouch')">Deathtouch</div>
+        <div class="kw-chip" onclick="chipSearch(this,'Indestructible')">Indestructible</div>
+        <div class="kw-chip" onclick="chipSearch(this,'Hexproof')">Hexproof</div>
+        <div class="kw-chip" onclick="chipSearch(this,'First Strike')">First Strike</div>
+        <div class="kw-chip" onclick="chipSearch(this,'Lifelink')">Lifelink</div>
+        <div class="kw-chip" onclick="chipSearch(this,'Double Strike')">Double Strike</div>
+        <div class="kw-chip" onclick="chipSearch(this,'Protection')">Protection</div>
+        <div class="kw-chip" onclick="chipSearch(this,'Flying')">Flying</div>
+        <div class="kw-chip" onclick="chipSearch(this,'Menace')">Menace</div>
+      </div>
+      <div id="interaction-results"></div>
+    </div>
+
+    <!-- GLOSSARY -->
+    <div class="tab-panel" id="panel-glossary">
+      <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" type="text" placeholder="Search keywords..." oninput="filterGlossary(this.value)"></div>
+      <div id="glossary-list"></div>
+    </div>
+
+  </div>
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('turn',this)"><div class="tab-icon">⚔</div><div class="tab-label">Turn Guide</div></button>
+    <button class="tab-btn" onclick="switchTab('life',this)"><div class="tab-icon">❤️</div><div class="tab-label">Life Track</div></button>
+    <button class="tab-btn" onclick="switchTab('interact',this)"><div class="tab-icon">⚡</div><div class="tab-label">Interactions</div></button>
+    <button class="tab-btn" onclick="switchTab('glossary',this)"><div class="tab-icon">📖</div><div class="tab-label">Keywords</div></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let turn = 1;
+let players = [
+  {name:'Player 1',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
+  {name:'Player 2',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
+  {name:'Player 3',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
+  {name:'Player 4',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
+];
+
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='life'){renderLife();renderManaPool();}
+  if(name==='interact')renderInteractions('');
+  if(name==='glossary')renderGlossary('');
+}
+
+function endTurn(){
+  turn++;
+  document.getElementById('turn-num').textContent=turn;
+  document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
+  showToast('Turn '+turn+' — next player\'s turn');
+}
+
+function togglePhase(header){
+  header.nextElementSibling.classList.toggle('open');
+  header.classList.toggle('open');
+}
+
+function renderLife(){
+  const grid=document.getElementById('life-grid');
+  grid.innerHTML=players.map((p,i)=>{
+    const others=players.map((op,j)=>({op,j})).filter(x=>x.j!==i);
+    const pips=others.map(({op,j})=>{
+      const d=p.cmdDmg[j]||0;
+      const cls=d>=21?'danger':d>=15?'warn':'';
+      // Show up to 7 chars of name
+      const label=op.name.length>7?op.name.substring(0,6)+'…':op.name;
+      return `<div class="cmdr-pip" onclick="addCmdrDmg(${i},${j})" title="Tap to add 1 commander damage from ${op.name}">
+        <span class="cmdr-pip-name">${label}</span>
+        <span class="cmdr-pip-val ${cls}">${d}</span>
+        <span class="cmdr-pip-hint">tap +1</span>
+      </div>`;
+    }).join('');
+    const lc=p.life<=10?'danger':p.life<=20?'warning':'';
+    return `<div class="life-card ${p.eliminated?'eliminated':''}" id="lc-${i}">
+      <input class="player-name-input" value="${p.name}" onchange="players[${i}].name=this.value;renderLife();" placeholder="Player ${i+1}">
+      <div class="life-display ${lc}" id="life-${i}">${p.life}</div>
+      <div class="life-btns">
+        <button class="life-btn minus" onclick="changeLife(${i},-1)">−</button>
+        <button class="life-btn minus sm" onclick="changeLife(${i},-5)">-5</button>
+        <button class="life-btn sm" onclick="changeLife(${i},5)">+5</button>
+        <button class="life-btn" onclick="changeLife(${i},1)">＋</button>
+      </div>
+      <div class="cmdr-dmg-section">
+        <div class="cmdr-dmg-label">⚔ Commander Damage Received From:</div>
+        <div class="cmdr-dmg-row">${pips}</div>
+      </div>
+    </div>`;
+  }).join('');
+  const ab=document.getElementById('add-player-btn');
+  if(ab)ab.style.display=players.length>=6?'none':'';
+  renderPoison();
+}
+
+function changeLife(idx,delta){
+  if(players[idx].eliminated)return;
+  players[idx].life+=delta;
+  const el=document.getElementById('life-'+idx);
+  if(el){el.textContent=players[idx].life;el.className='life-display '+(players[idx].life<=10?'danger':players[idx].life<=20?'warning':'');}
+  if(players[idx].life<=0){players[idx].eliminated=true;renderLife();showToast(players[idx].name+' eliminated!');}
+}
+
+function addCmdrDmg(victimIdx,srcIdx){
+  players[victimIdx].cmdDmg[srcIdx]=(players[victimIdx].cmdDmg[srcIdx]||0)+1;
+  const v=players[victimIdx].cmdDmg[srcIdx];
+  if(v>=21){players[victimIdx].eliminated=true;showToast(players[victimIdx].name+' took 21 commander damage!');renderLife();}
+  else{renderLife();if(v>=15)showToast(players[srcIdx].name+'→'+players[victimIdx].name+': '+v+' cmd dmg');}
+}
+
+function renderPoison(){
+  const sec=document.getElementById('poison-section');
+  if(!sec)return;
+  sec.innerHTML=players.map((p,i)=>`
+    <div style="background:var(--accent-faint2);border:1px solid var(--border);border-radius:5px;padding:8px 10px;">
+      <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.58rem;color:var(--accent-dark);margin-bottom:5px;letter-spacing:0.08em;">${p.name}</div>
+      <div class="poison-row">${Array.from({length:10},(_,k)=>`<div class="poison-counter ${k<p.poison?(p.poison>=10?'filled lethal':'filled'):''}" onclick="addPoison(${i})">${k+1}</div>`).join('')}</div>
+    </div>`).join('');
+}
+
+function addPoison(idx){
+  if(players[idx].poison<10){players[idx].poison++;
+    if(players[idx].poison>=10){players[idx].eliminated=true;showToast(players[idx].name+' died to poison!');renderLife();}
+    else renderPoison();}
+}
+
+function addPlayer(){
+  if(players.length>=6)return;
+  players.push({name:'Player '+(players.length+1),life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false});
+  renderLife();
+}
+
+function resetLife(){
+  players.forEach(p=>{p.life=40;p.eliminated=false;p.cmdDmg=[0,0,0,0,0,0];p.poison=0;});
+  renderLife();showToast('Life reset to 40');
+}
+
+function resetAll(){
+  players=[
+    {name:'Player 1',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
+    {name:'Player 2',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
+    {name:'Player 3',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
+    {name:'Player 4',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
+  ];
+  turn=1;document.getElementById('turn-num').textContent=1;
+  renderLife();showToast('New game!');
+}
+
+const interactions=[
+  {kw1:'Trample',kw2:'Deathtouch (same creature)',verdict:'wins',verdictText:'POWERFUL COMBO',explanation:'When the SAME creature has both Trample and Deathtouch, it only needs to assign 1 damage to each blocker (Deathtouch makes any amount lethal). All remaining power tramples through to the player.',rule:'Rule 702.19b + 702.2b',example:'Your 5/5 Trample+Deathtouch vs a 3/3. Assign 1 to the 3/3, 4 tramples to the player. The 3/3 dies.'},
+  {kw1:'Trample',kw2:'Deathtouch (on blocker)',verdict:'depends',verdictText:'READ CAREFULLY',explanation:'If the ATTACKER has Trample and the BLOCKER has Deathtouch — the attacker must still assign the blocker\'s full toughness before trampling. The attacker also dies to the Deathtouch damage dealt back.',rule:'Rule 702.19b',example:'Your 5/5 Trample vs their 2/2 Deathtouch: assign 2 to the 2/2, 3 tramples through. Your 5/5 dies. Their 2/2 dies. Opponent takes 3.'},
+  {kw1:'First Strike',kw2:'Deathtouch',verdict:'wins',verdictText:'EXTREMELY POWERFUL',explanation:'A creature with both First Strike and Deathtouch deals damage first, killing the blocker before it can deal damage back.',rule:'Rule 702.7 + 702.2b',example:'Your 1/1 First Strike+Deathtouch blocks a 6/6. Your 1 damage kills the 6/6 in the first strike step. The 6/6 never deals damage back. Your 1/1 lives.'},
+  {kw1:'Indestructible',kw2:'Deathtouch',verdict:'wins',verdictText:'INDESTRUCTIBLE WINS',explanation:'Deathtouch makes damage "lethal." But Indestructible means the creature cannot be destroyed by any means — it overrides Deathtouch completely.',rule:'Rule 702.12 + 702.2b',example:'Your Indestructible 4/4 takes 1 Deathtouch damage — technically lethal — but Indestructible prevents destruction. It survives.'},
+  {kw1:'Indestructible',kw2:'Exile',verdict:'loses',verdictText:'EXILE WINS',explanation:'Indestructible only stops being DESTROYED. Exile removes the card from the game entirely — it is never "destroyed." Indestructible offers no protection against exile.',rule:'Rule 702.12',example:'"Swords to Plowshares" exiles a creature. Even Indestructible creatures are exiled — the effect says "exile" not "destroy."'},
+  {kw1:'Hexproof',kw2:'Destroy All',verdict:'loses',verdictText:'NOT PROTECTED',explanation:'Hexproof prevents opponents from TARGETING your permanent. "Destroy all creatures" does not target — it hits everything at once. Hexproof does nothing.',rule:'Rule 702.11',example:'"Wrath of God" says "Destroy all creatures." No targeting. Your Hexproof creature is destroyed along with everything else.'},
+  {kw1:'Hexproof',kw2:'Target Removal',verdict:'wins',verdictText:'FULLY PROTECTED',explanation:'Spells that say "Destroy TARGET creature" must target something. Hexproof prevents opponents from choosing your permanent as a target.',rule:'Rule 702.11',example:'"Murder" says "Destroy target creature." Your opponent cannot target your Hexproof creature. The spell cannot be cast at it.'},
+  {kw1:'Lifelink',kw2:'Trample',verdict:'wins',verdictText:'GAINS ALL DAMAGE',explanation:'Lifelink triggers on ALL damage — including trample damage that carries through to the player. You gain life equal to the total damage dealt.',rule:'Rule 702.15 + 702.19b',example:'Your 5/5 Trample+Lifelink vs a 2/2. Assign 2 to blocker, 3 tramples to player. You gain 5 life total.'},
+  {kw1:'Double Strike',kw2:'Lifelink',verdict:'wins',verdictText:'GAINS LIFE TWICE',explanation:'Double Strike deals damage in two steps. Lifelink applies to each. You gain life from the first strike damage AND from the regular damage.',rule:'Rule 702.4 + 702.15',example:'Your 3/3 Double Strike+Lifelink attacks unblocked: deal 3 and gain 3 in the first step, deal 3 and gain 3 in the regular step. 6 total life gained.'},
+  {kw1:'Protection',kw2:'Targeted Spell',verdict:'wins',verdictText:'D.E.B.T. APPLIES',explanation:'Protection from [quality] = cannot be Damaged, Enchanted/Equipped, Blocked, or Targeted by that quality. Only applies to the specific quality named.',rule:'Rule 702.16',example:'Protection from Red: red spells can\'t target it, red creatures can\'t block it, red sources deal zero damage. A blue spell still works fine.'},
+  {kw1:'Flying',kw2:'Reach',verdict:'depends',verdictText:'REACH CAN BLOCK',explanation:'Flying creatures can only be blocked by Flying or Reach creatures. Reach creatures can block flyers even without Flying.',rule:'Rule 702.9 + 702.17',example:'Your 2/2 Flying attacks. Opponent has a 3/4 Reach. They can block your flyer despite it not having Flying.'},
+  {kw1:'Menace',kw2:'Single Blocker',verdict:'wins',verdictText:'CANNOT BE BLOCKED',explanation:'Menace requires two or more blockers simultaneously. If opponent has only one available creature, your Menace creature cannot be legally blocked at all.',rule:'Rule 702.110',example:'Your 4/4 Menace attacks. Opponent has one creature — they cannot block. If they have two or more, they CAN block with both.'},
+];
+
+function renderInteractions(query){
+  const c=document.getElementById('interaction-results');
+  const q=query.toLowerCase();
+  const f=q?interactions.filter(i=>i.kw1.toLowerCase().includes(q)||i.kw2.toLowerCase().includes(q)||i.explanation.toLowerCase().includes(q)):interactions;
+  if(!f.length){c.innerHTML=`<div class="no-results"><span style="font-size:2rem;display:block;margin-bottom:8px;opacity:0.3;">🔮</span>No results for "${query}"</div>`;return;}
+  c.innerHTML=f.map(i=>`<div class="interaction-result"><div class="ir-head"><div class="ir-keywords">${i.kw1}<span class="ir-vs">vs</span>${i.kw2}</div><div class="verdict verdict-${i.verdict}">${i.verdictText}</div></div><div class="ir-body"><div class="ir-explanation">${i.explanation}</div><div class="ir-rule">${i.rule}</div>${i.example?`<div class="ir-example">📋 ${i.example}</div>`:''}</div></div>`).join('');
+}
+
+function filterInteractions(val){document.querySelectorAll('.kw-chip').forEach(c=>c.classList.remove('selected'));renderInteractions(val);}
+function chipSearch(chip,term){document.querySelectorAll('.kw-chip').forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');document.getElementById('interact-search').value=term;renderInteractions(term);}
+
+const glossary=[
+  {name:'Flying',diff:'common',rule:'702.9',def:'Can only be blocked by creatures with Flying or Reach. All ground creatures are ignored when it attacks.',tip:'One of the best evasion abilities — an unblocked attacker deals full damage directly to your opponent.'},
+  {name:'Trample',diff:'common',rule:'702.19',def:'Must assign lethal damage to each blocker first. Any excess damage carries over to the defending player.',tip:'A 10/10 Trample blocked by a 1/1 still deals 9 damage to the player!',warning:'You cannot skip the blocker — you must deal their full toughness worth of damage first.'},
+  {name:'Deathtouch',diff:'common',rule:'702.2',def:'Any amount of damage this creature deals is enough to destroy the damaged creature. Even 1 damage is lethal.',tip:'Excellent on blockers — a 1/1 Deathtouch can trade with any creature regardless of size.',warning:'Does not work against Indestructible creatures.'},
+  {name:'Lifelink',diff:'common',rule:'702.15',def:'Whenever this creature deals damage of any kind, you gain life equal to the damage dealt. Happens simultaneously with the damage.'},
+  {name:'Haste',diff:'common',rule:'702.10',def:'Can attack and use {T} abilities the same turn it enters the battlefield. Bypasses Summoning Sickness.',tip:'A surprise threat — opponents often don\'t plan for creatures that can attack immediately.'},
+  {name:'Vigilance',diff:'common',rule:'702.20',def:'Does not tap when it attacks. Can attack on your turn and block on opponents\' turns.'},
+  {name:'Reach',diff:'common',rule:'702.17',def:'Can block creatures with Flying, even without Flying itself.'},
+  {name:'First Strike',diff:'common',rule:'702.7',def:'Deals combat damage in a special first step before normal damage. Can kill the blocker before it gets to deal damage back.',tip:'First Strike + Deathtouch is one of the most powerful combat combinations — kills almost anything without dying.'},
+  {name:'Double Strike',diff:'common',rule:'702.4',def:'Deals damage in both the first strike step AND the regular combat damage step — effectively hitting twice.'},
+  {name:'Flash',diff:'common',rule:'702.8',def:'Can be cast at any time you could cast an Instant — opponent\'s turn, during combat, in response to spells.',tip:'Cast after attackers are declared to use as a surprise blocker your opponent didn\'t account for!'},
+  {name:'Hexproof',diff:'moderate',rule:'702.11',def:'Cannot be targeted by spells or abilities opponents control. You CAN still target your own Hexproof permanent.',warning:'Does NOT protect against non-targeted effects like "Destroy all creatures." Only stops targeting.'},
+  {name:'Indestructible',diff:'moderate',rule:'702.12',def:'Cannot be destroyed by damage or "destroy" effects.',warning:'Can still be exiled, sacrificed, or have toughness reduced to 0. Indestructible does not equal immortal.'},
+  {name:'Menace',diff:'moderate',rule:'702.110',def:'Cannot be blocked unless two or more creatures block it simultaneously.'},
+  {name:'Ward',diff:'moderate',rule:'702.20',def:'When targeted by an opponent\'s spell or ability, that effect is countered unless they pay the Ward cost. Acts as a tax on removal.'},
+  {name:'Prowess',diff:'moderate',rule:'702.107',def:'Gets +1/+1 until end of turn whenever you cast a non-creature spell. Each spell triggers it separately and they stack.',tip:'Casting several instants in one turn can make a Prowess creature enormous very quickly.'},
+  {name:'Summoning Sickness',diff:'moderate',rule:'302.6',def:'A creature that just entered the battlefield cannot attack or use {T} abilities until your next turn.',warning:'It CAN still block. It CAN use non-tap activated abilities.'},
+  {name:'Protection',diff:'advanced',rule:'702.16',def:'D.E.B.T.: cannot be Damaged, Enchanted/Equipped, Blocked, or Targeted by the named quality. Only applies to that specific quality.',warning:'Does not help against non-targeted "all" effects unless they deal damage of that quality.'},
+  {name:'Cascade',diff:'advanced',rule:'702.84',def:'When cast, exile cards from library until finding a non-land card with lesser mana value. Cast it for free. Remaining cards go to bottom of library.',warning:'The free spell resolves BEFORE the original Cascade spell.'},
+  {name:'Annihilator',diff:'advanced',rule:'702.86',def:'When this attacks, the defending player must sacrifice X permanents immediately — before blockers are declared. Cannot be responded to.',warning:'The sacrifice is mandatory and instant. The player must sacrifice — they have no choice.'},
+  {name:'Saga',diff:'advanced',rule:'714',def:'Gains a Lore counter at the start of your main phase each turn. Each chapter ability triggers when that number of counters is reached. Sacrificed after the final chapter.'},
+];
+
+function renderGlossary(query){
+  const c=document.getElementById('glossary-list');
+  const q=query.toLowerCase();
+  const f=q?glossary.filter(g=>g.name.toLowerCase().includes(q)||g.def.toLowerCase().includes(q)):glossary;
+  c.innerHTML=f.map(g=>`<div class="gloss-card"><div class="gloss-head" onclick="toggleGloss(this)"><div class="gloss-name">${g.name}</div><div class="gloss-tags"><div class="diff-tag diff-${g.diff}">${g.diff}</div><div class="gloss-rule-num">${g.rule}</div><div class="gloss-chev">▼</div></div></div><div class="gloss-body"><div class="gloss-def">${g.def}</div>${g.tip?`<div class="gloss-tip">💡 ${g.tip}</div>`:''}${g.warning?`<div class="gloss-warning">⚠ ${g.warning}</div>`:''}</div></div>`).join('');
+}
+
+function toggleGloss(head){const b=head.nextElementSibling;const c=head.querySelector('.gloss-chev');b.classList.toggle('open');if(c)c.classList.toggle('open');}
+function filterGlossary(val){renderGlossary(val);}
+
+let toastTimeout;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ═══════════════════════════════
+// FLOATING MANA POOL
+// ═══════════════════════════════
+let manaPool = {W:0,U:0,B:0,R:0,G:0,C:0};
+
+function changeMana(colour, delta){
+  manaPool[colour] = Math.max(0, manaPool[colour] + delta);
+  const el = document.getElementById('mp-'+colour);
+  if(el) el.textContent = manaPool[colour];
+  // glow effect when value > 0
+  const pip = el ? el.parentElement : null;
+  if(pip) pip.style.boxShadow = manaPool[colour] > 0 ? '0 0 12px rgba(255,255,255,0.25)' : 'none';
+}
+
+function resetMana(){
+  Object.keys(manaPool).forEach(k => {
+    manaPool[k] = 0;
+    const el = document.getElementById('mp-'+k);
+    if(el){ el.textContent = '0'; el.parentElement.style.boxShadow = 'none'; }
+  });
+  showToast('Mana pool cleared');
+}
+
+function renderManaPool(){
+  Object.keys(manaPool).forEach(k => {
+    const el = document.getElementById('mp-'+k);
+    if(el) el.textContent = manaPool[k];
+  });
+}
+
+renderLife();renderInteractions('');renderGlossary('');renderManaPool();
+
+// Register Service Worker for offline use
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Commander Companion: offline ready ✓'))
+      .catch(err => console.log('SW registration failed:', err));
+  });
+}
+</script>
+</body>
+</html>
