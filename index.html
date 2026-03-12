@@ -648,7 +648,7 @@ renderLife();renderInteractions('');renderGlossary('');renderManaPool();
 // Register Service Worker for offline use
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
+    navigator.serviceWorker.register('/mtg-commander/service-worker.js')
       .then(reg => console.log('Commander Companion: offline ready ✓'))
       .catch(err => console.log('SW registration failed:', err));
   });

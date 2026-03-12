@@ -1,19 +1,21 @@
 // Commander Companion — Service Worker
 // Caches the entire app on first load for offline use
 
-const CACHE_NAME = 'commander-companion-v1';
+const CACHE_NAME = 'commander-companion-v2';
+const BASE = '/mtg-commander';
 
 // Everything the app needs to work offline
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/icon-180.png',
-  '/icons/icon-167.png',
-  '/icons/icon-152.png',
-  '/apple-touch-icon.png'
+  BASE + '/',
+  BASE + '/index.html',
+  BASE + '/manifest.json',
+  BASE + '/service-worker.js',
+  BASE + '/icons/icon-192.png',
+  BASE + '/icons/icon-512.png',
+  BASE + '/icons/icon-180.png',
+  BASE + '/icons/icon-167.png',
+  BASE + '/icons/icon-152.png',
+  BASE + '/apple-touch-icon.png'
 ];
 
 // Install — cache all assets immediately
