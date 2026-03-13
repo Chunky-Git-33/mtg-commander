@@ -1,7 +1,7 @@
 // Commander Companion — Service Worker
 // Caches the entire app on first load for offline use
 
-const CACHE_NAME = 'commander-companion-v2';
+const CACHE_NAME = 'commander-companion-v3';
 const BASE = '/mtg-commander';
 
 // Everything the app needs to work offline
