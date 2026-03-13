@@ -261,7 +261,7 @@ html, body { height:100%; font-family:'Palatino','Book Antiqua',Georgia,serif; b
         <div class="phase-body">
           <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Beginning of Combat</div><div class="step-desc">"At the beginning of combat" triggers fire. Before attackers are chosen.</div><div class="step-tip">💡 Last chance to tap opponent's creatures before they can attack!</div><div class="priority-pill pill-open">✓ Priority open</div></div></div>
           <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Declare Attackers</div><div class="step-desc">Choose which creatures attack and who they target. Attackers tap unless they have Vigilance. In Commander you can attack different opponents with different creatures!</div><div class="priority-pill pill-open">✓ Priority opens after</div></div></div>
-          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Declare Blockers</div><div class="step-desc">Defending players choose blockers. Blockers do NOT tap. If multiple creatures block one attacker, you choose the damage order.</div><div class="step-tip">💡 Each creature can only block one attacker.</div><div class="priority-pill pill-open">✓ Priority opens after</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Declare Blockers</div><div class="step-desc">Defending players choose blockers. Blockers do NOT tap. If multiple creatures block one attacker, the <strong>attacking player</strong> chooses the damage order.</div><div class="step-tip">💡 Each creature can only block one attacker.</div><div class="priority-pill pill-open">✓ Priority opens after</div></div></div>
           <div class="step-row"><div class="step-dot dot-special"></div><div class="step-content"><div class="step-title">First Strike Damage <em style="font-weight:400;font-size:0.7rem;">(if any)</em></div><div class="step-desc">Only if any creature has First Strike or Double Strike. They deal damage before everyone else.</div><div class="priority-pill pill-open">✓ Priority opens after</div></div></div>
           <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">Combat Damage</div><div class="step-desc">All remaining creatures deal damage simultaneously. Creatures with lethal damage die via state-based actions.</div><div class="step-tip">💡 Both creatures can kill each other at the same time — damage is simultaneous!</div><div class="priority-pill pill-open">✓ Priority opens after</div></div></div>
           <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">End of Combat</div><div class="step-desc">"At end of combat" effects trigger. Creatures leave combat.</div><div class="priority-pill pill-open">✓ Priority open</div></div></div>
@@ -297,6 +297,98 @@ html, body { height:100%; font-family:'Palatino','Book Antiqua',Georgia,serif; b
       <div class="rule-box"><strong>Commander Tax:</strong> Each recast from the command zone costs +{2}. Third cast costs +4 extra mana total.</div>
       <div class="rule-box"><strong>Zone Replacement:</strong> When your commander would go to graveyard or exile, you may redirect it to the command zone instead.</div>
       <div class="rule-box" style="margin-bottom:16px;"><strong>Starting Life:</strong> 40 life in Commander (not 20). Poison still kills at 10 counters.</div>
+
+      <!-- CARD TYPES -->
+      <div class="sec-head">🃏 Card Types</div>
+      <div style="font-size:0.78rem;color:var(--text-light);margin-bottom:10px;line-height:1.4;">When can you play each type of card? Here's a quick reference:</div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num" style="font-size:0.55rem;">🐉</div><div class="phase-name">Creature</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">When to play</div><div class="step-desc">Only during YOUR main phase, with the stack empty. Creatures enter the battlefield and stay there as permanents.</div><div class="step-tip">💡 Subject to Summoning Sickness — cannot attack or use {T} abilities the turn they enter unless they have Haste.</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">How they work</div><div class="step-desc">Creatures have Power/Toughness shown as X/X in the bottom right. Power = damage they deal. Toughness = damage needed to kill them. They can attack, block, and use activated abilities.</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num" style="font-size:0.55rem;">⚡</div><div class="phase-name">Instant</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">When to play</div><div class="step-desc">ANY time you have priority — your turn, opponent's turn, during combat, even in response to other spells. The most flexible card type in the game.</div><div class="step-tip">💡 Holding up mana during your opponent's turn signals you might have an instant. This is called "playing around" removal.</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">How they work</div><div class="step-desc">Cast the spell, pay the cost, it resolves and goes to the graveyard. One-time effect. Does not stay on the battlefield.</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num" style="font-size:0.55rem;">📜</div><div class="phase-name">Sorcery</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-closed"></div><div class="step-content"><div class="step-title">When to play</div><div class="step-desc">Only during YOUR main phase, with the stack empty. Unlike Instants, you cannot cast Sorceries in response to anything or on an opponent's turn.</div><div class="step-tip">💡 Think of Sorceries as "slow instants" — same one-time effect, but you have to plan when to use them carefully.</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">How they work</div><div class="step-desc">Cast, pay the cost, it resolves and goes to the graveyard. One-time effect. Some of the most powerful effects in the game are Sorceries (board wipes, big draw spells).</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num" style="font-size:0.55rem;">🏔</div><div class="phase-name">Land</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-closed"></div><div class="step-content"><div class="step-title">When to play</div><div class="step-desc">ONE land per turn, during YOUR main phase, with the stack empty. Lands are NOT spells — they cannot be countered and do not go on the stack.</div><div class="step-tip">💡 Playing a land every turn is one of the most important habits in MTG. Missing a land drop puts you behind on mana.</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">How they work</div><div class="step-desc">Tap a land to add mana of its colour to your pool. Basic lands produce one colour each: Plains=W, Island=U, Swamp=B, Mountain=R, Forest=G. Mana empties at end of each phase.</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num" style="font-size:0.55rem;">⚙</div><div class="phase-name">Artifact</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">When to play</div><div class="step-desc">During YOUR main phase with the stack empty (unless they have Flash). Artifacts are permanents — they stay on the battlefield.</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">How they work</div><div class="step-desc">Colourless by default — can be cast with any mana. Includes Equipment (attach to creatures for bonuses), Vehicles (crew them to make them creatures), and utility rocks (like Sol Ring which produces extra mana).</div><div class="step-tip">💡 Equipment stays on the battlefield even if the creature it's attached to dies. You can reattach it to another creature.</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num" style="font-size:0.55rem;">✨</div><div class="phase-name">Enchantment</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">When to play</div><div class="step-desc">During YOUR main phase with the stack empty (unless they have Flash). Enchantments are permanents that stay on the battlefield and provide ongoing effects.</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">How they work</div><div class="step-desc">Global enchantments affect the whole game. Auras attach to a specific permanent (creature, land, etc.) and give it bonuses or penalties. If the permanent an Aura is attached to leaves the battlefield, the Aura goes to the graveyard.</div><div class="step-tip">💡 Be careful enchanting opponents' creatures — if they sacrifice it, your Aura dies with it.</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num" style="font-size:0.55rem;">🌟</div><div class="phase-name">Planeswalker</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">When to play</div><div class="step-desc">During YOUR main phase with the stack empty. Planeswalkers are powerful permanents that represent allies fighting alongside you.</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">How they work</div><div class="step-desc">Enter with a set number of loyalty counters. Once per turn during your main phase, activate ONE loyalty ability — either adding or removing counters. Opponents can attack planeswalkers directly instead of attacking you. If loyalty reaches 0, the planeswalker dies.</div><div class="step-tip">💡 You can only use ONE loyalty ability per planeswalker per turn, even if you have enough counters for more.</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-block" style="margin-bottom:16px;">
+        <div class="phase-header" onclick="togglePhase(this)">
+          <div class="phase-header-left"><div class="phase-num" style="font-size:0.55rem;">⚔</div><div class="phase-name">Battle</div></div>
+          <div class="phase-chevron">▼</div>
+        </div>
+        <div class="phase-body">
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">When to play</div><div class="step-desc">During YOUR main phase with the stack empty. Battles are a newer card type introduced in 2023.</div></div></div>
+          <div class="step-row"><div class="step-dot dot-open"></div><div class="step-content"><div class="step-title">How they work</div><div class="step-desc">Siege battles (the most common type) enter with defence counters and are controlled by you but protected by an opponent. Players can attack the battle to remove defence counters. When all counters are removed, the battle is defeated and exiles — transforming into a powerful card for the player who defeated it.</div><div class="step-tip">💡 You can attack your OWN battle to defeat it yourself and get the reward.</div></div></div>
+        </div>
+      </div>
     </div>
 
     <!-- LIFE TRACKER -->
@@ -307,7 +399,7 @@ html, body { height:100%; font-family:'Palatino','Book Antiqua',Georgia,serif; b
         <div class="ctrl-btn danger-btn" onclick="resetAll()">✕ New Game</div>
       </div>
       <div class="life-grid" id="life-grid"></div>
-      <div class="sec-head">☠ Poison Counters <span style="font-size:0.52rem;font-weight:400;font-style:italic;color:var(--text-light);">(10 = eliminated)</span></div>
+      <div class="sec-head">☠ Counter Tracker <span style="font-size:0.52rem;font-weight:400;font-style:italic;color:var(--text-light);">(poison / toxic / infect — 10 = eliminated)</span></div>
       <div id="poison-section" style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px;"></div>
       <div class="sec-head">◈ Mana Reference</div>
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:8px;">
@@ -436,8 +528,6 @@ let turn = 1;
 let players = [
   {name:'Player 1',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
   {name:'Player 2',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
-  {name:'Player 3',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
-  {name:'Player 4',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
 ];
 
 function switchTab(name,btn){
@@ -544,8 +634,6 @@ function resetAll(){
   players=[
     {name:'Player 1',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
     {name:'Player 2',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
-    {name:'Player 3',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
-    {name:'Player 4',life:40,cmdDmg:[0,0,0,0,0,0],poison:0,eliminated:false},
   ];
   turn=1;document.getElementById('turn-num').textContent=1;
   renderLife();showToast('New game!');
@@ -598,13 +686,21 @@ const glossary=[
   {name:'Cascade',diff:'advanced',rule:'702.84',def:'When cast, exile cards from library until finding a non-land card with lesser mana value. Cast it for free. Remaining cards go to bottom of library.',warning:'The free spell resolves BEFORE the original Cascade spell.'},
   {name:'Annihilator',diff:'advanced',rule:'702.86',def:'When this attacks, the defending player must sacrifice X permanents immediately — before blockers are declared. Cannot be responded to.',warning:'The sacrifice is mandatory and instant. The player must sacrifice — they have no choice.'},
   {name:'Saga',diff:'advanced',rule:'714',def:'Gains a Lore counter at the start of your main phase each turn. Each chapter ability triggers when that number of counters is reached. Sacrificed after the final chapter.'},
+  {name:'Crew',diff:'moderate',rule:'702.121',tipPlain:true,def:'An ability on Vehicle artifact cards. Tap any creatures you control with combined power equal to or greater than the Crew number — the Vehicle becomes an artifact creature until end of turn. After the Cleanup Step it stops being a creature and goes back to being a regular artifact.',tip:'Step-by-step guide to using a Vehicle:\n1. YOUR TURN — During the Beginning of Combat step (before attackers are declared), tap creatures you control whose power adds up to the Crew number or more. The Vehicle is now a creature.\n2. ATTACKING — Your now-crewed Vehicle can attack this turn like any other creature. The creatures that tapped to crew it cannot also attack (they are tapped).\n3. OPPONENT\'S TURN — At the start of their Beginning of Combat step, you can tap your available creatures to crew the Vehicle again so it can block.\n4. END OF TURN — During Cleanup, the Vehicle stops being a creature. You must crew it again next time.\n\nKey rules to remember:\n• You can use MORE power than required — crewing a Crew 2 Vehicle with a single 5/5 is perfectly legal.\n• Multiple smaller creatures can combine — two 1/1s can crew a Crew 2 Vehicle.\n• Creatures that attacked this turn CAN tap to crew a Vehicle after combat — but tapped creatures cannot block.\n• A Vehicle that entered the battlefield this turn cannot attack even when crewed, unless it has Haste. Summoning Sickness applies to the Vehicle itself.\n• Crewing is an activated ability — it can be done any time you have priority, not just during your turn.',warning:'The creatures tapping to crew are paying a cost — they are not "inside" the Vehicle and can be targeted and killed separately. If all your crew creatures die in response to crewing, the Vehicle still becomes a creature because the ability has already been activated.'},
+  {name:'Toxic',diff:'moderate',rule:'702.164',def:'When a creature with Toxic X deals combat damage to a player, that player gets X poison counters in addition to taking the damage. At 10 poison counters, that player loses the game.',tip:'Toxic stacks — if two creatures with Toxic 1 both deal damage to you, you get 2 poison counters total.',warning:'Unlike Infect, Toxic creatures deal normal damage to life totals AND give poison counters. Infect replaces damage with counters. These are different mechanics.'},
+  {name:'Infect',diff:'advanced',rule:'702.90',def:'This creature deals damage to creatures in the form of -1/-1 counters and to players in the form of poison counters instead of normal damage. Players lose at 10 poison counters.',warning:'Infect replaces ALL damage — it does not reduce life totals. A 3/3 Infect creature dealing combat damage to a player gives 3 poison counters, not 3 damage. Very powerful but requires a dedicated strategy.'},
 ];
 
 function renderGlossary(query){
   const c=document.getElementById('glossary-list');
   const q=query.toLowerCase();
   const f=q?glossary.filter(g=>g.name.toLowerCase().includes(q)||g.def.toLowerCase().includes(q)):glossary;
-  c.innerHTML=f.map(g=>`<div class="gloss-card"><div class="gloss-head" onclick="toggleGloss(this)"><div class="gloss-name">${g.name}</div><div class="gloss-tags"><div class="diff-tag diff-${g.diff}">${g.diff}</div><div class="gloss-rule-num">${g.rule}</div><div class="gloss-chev">▼</div></div></div><div class="gloss-body"><div class="gloss-def">${g.def}</div>${g.tip?`<div class="gloss-tip">💡 ${g.tip}</div>`:''}${g.warning?`<div class="gloss-warning">⚠ ${g.warning}</div>`:''}</div></div>`).join('');
+  c.innerHTML=f.map(g=>{
+    const tipHtml = g.tip ? g.tip.replace(/\n/g,'<br>') : '';
+    const warnHtml = g.warning ? g.warning.replace(/\n/g,'<br>') : '';
+    const tipStyle = g.tipPlain ? 'font-style:normal;' : '';
+    return `<div class="gloss-card"><div class="gloss-head" onclick="toggleGloss(this)"><div class="gloss-name">${g.name}</div><div class="gloss-tags"><div class="diff-tag diff-${g.diff}">${g.diff}</div><div class="gloss-rule-num">${g.rule}</div><div class="gloss-chev">▼</div></div></div><div class="gloss-body"><div class="gloss-def">${g.def}</div>${tipHtml?`<div class="gloss-tip" style="${tipStyle}">💡 ${tipHtml}</div>`:''}${warnHtml?`<div class="gloss-warning">⚠ ${warnHtml}</div>`:''}</div></div>`;
+  }).join('');
 }
 
 function toggleGloss(head){const b=head.nextElementSibling;const c=head.querySelector('.gloss-chev');b.classList.toggle('open');if(c)c.classList.toggle('open');}
