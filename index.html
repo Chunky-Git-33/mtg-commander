@@ -486,6 +486,11 @@ html, body { height:100%; font-family:'Palatino','Book Antiqua',Georgia,serif; b
       </div>
     </div>
 
+    <!-- COMMANDER ZONE -->
+    <div class="tab-panel" id="panel-cmd">
+      <div id="cmd-zone-container"></div>
+    </div>
+
     <!-- INTERACTIONS -->
     <div class="tab-panel" id="panel-interact">
       <div class="search-wrap"><span class="search-icon">🔍</span><input class="search-input" type="text" placeholder="Search e.g. trample, hexproof..." oninput="filterInteractions(this.value)" id="interact-search"></div>
@@ -511,13 +516,62 @@ html, body { height:100%; font-family:'Palatino','Book Antiqua',Georgia,serif; b
       <div id="glossary-list"></div>
     </div>
 
+    <!-- DICE -->
+    <div class="tab-panel" id="panel-dice">
+
+      <!-- TWO D6 ROLLER -->
+      <div class="sec-head" style="margin-top:0;">⚄ Dice Roller</div>
+      <div style="background:var(--ink3);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;">
+        <div style="display:flex;justify-content:center;gap:20px;margin-bottom:18px;">
+          <div id="die1" style="width:72px;height:72px;background:linear-gradient(135deg,#1a2e4a,#0f1c2e);border:2px solid var(--accent-dark);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;box-shadow:0 4px 16px rgba(0,0,0,0.5),inset 0 1px 0 rgba(74,158,255,0.1);transition:transform 0.15s;">⚀</div>
+          <div id="die2" style="width:72px;height:72px;background:linear-gradient(135deg,#1a2e4a,#0f1c2e);border:2px solid var(--accent-dark);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;box-shadow:0 4px 16px rgba(0,0,0,0.5),inset 0 1px 0 rgba(74,158,255,0.1);transition:transform 0.15s;">⚀</div>
+        </div>
+        <div id="dice-total" style="text-align:center;font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:14px;">Tap to roll</div>
+        <button onclick="rollDice()" style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(74,158,255,0.2),rgba(74,158,255,0.08));border:1.5px solid var(--accent-dark);border-radius:var(--radius);color:white;font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.85rem;font-weight:700;letter-spacing:0.12em;cursor:pointer;text-transform:uppercase;transition:all 0.15s;box-shadow:0 0 20px rgba(74,158,255,0.1);">
+          ⚄ Roll 2D6
+        </button>
+      </div>
+
+      <!-- COIN FLIP -->
+      <div class="sec-head">🪙 Coin Flip</div>
+      <div style="background:var(--ink3);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;">
+        <div style="display:flex;justify-content:center;margin-bottom:14px;">
+          <div id="coin-display" style="width:80px;height:80px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f5e8b0,#c8aa5a);border:3px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 4px 20px rgba(0,0,0,0.5);transition:transform 0.15s;">🪙</div>
+        </div>
+        <div id="coin-result" style="text-align:center;font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.65rem;letter-spacing:0.15em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:14px;">Tap to flip</div>
+        <button onclick="flipCoin()" style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(201,168,76,0.2),rgba(201,168,76,0.06));border:1.5px solid rgba(201,168,76,0.4);border-radius:var(--radius);color:white;font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.85rem;font-weight:700;letter-spacing:0.12em;cursor:pointer;text-transform:uppercase;transition:all 0.15s;">
+          🪙 Flip Coin
+        </button>
+      </div>
+
+      <!-- INITIATIVE ROLLER -->
+      <div class="sec-head">⚔ Roll for Initiative</div>
+      <div style="background:var(--ink3);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;">
+        <div style="font-size:0.78rem;color:var(--text-light);margin-bottom:12px;line-height:1.5;">Rolls a D20 for each player and ranks them from highest to lowest to determine turn order. Ties are re-rolled automatically.</div>
+        <button onclick="rollInitiative()" style="width:100%;padding:14px;background:linear-gradient(135deg,rgba(39,174,96,0.2),rgba(39,174,96,0.06));border:1.5px solid rgba(39,174,96,0.4);border-radius:var(--radius);color:white;font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.85rem;font-weight:700;letter-spacing:0.12em;cursor:pointer;text-transform:uppercase;transition:all 0.15s;margin-bottom:12px;">
+          ⚔ Roll Initiative for All Players
+        </button>
+        <div id="initiative-results"></div>
+      </div>
+
+      <!-- ROLL HISTORY -->
+      <div class="sec-head">📜 Roll History</div>
+      <div id="roll-history" style="display:flex;flex-direction:column;gap:5px;margin-bottom:16px;">
+        <div style="text-align:center;padding:20px;color:rgba(255,255,255,0.25);font-style:italic;font-size:0.82rem;">No rolls yet</div>
+      </div>
+      <button onclick="clearHistory()" style="width:100%;padding:9px;background:var(--red-faint);border:1px solid rgba(192,57,43,0.3);border-radius:var(--radius);color:#ff9090;font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.58rem;letter-spacing:0.1em;cursor:pointer;text-transform:uppercase;margin-bottom:16px;">✕ Clear History</button>
+
+    </div>
+
   </div>
 
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('turn',this)"><div class="tab-icon">⚔</div><div class="tab-label">Turn Guide</div></button>
-    <button class="tab-btn" onclick="switchTab('life',this)"><div class="tab-icon">❤️</div><div class="tab-label">Life Track</div></button>
-    <button class="tab-btn" onclick="switchTab('interact',this)"><div class="tab-icon">⚡</div><div class="tab-label">Interactions</div></button>
-    <button class="tab-btn" onclick="switchTab('glossary',this)"><div class="tab-icon">📖</div><div class="tab-label">Keywords</div></button>
+  <div class="tab-bar" style="grid-template-columns:repeat(6,1fr);">
+    <button class="tab-btn active" onclick="switchTab('turn',this)"><div class="tab-icon">⚔</div><div class="tab-label">Turn</div></button>
+    <button class="tab-btn" onclick="switchTab('life',this)"><div class="tab-icon">❤️</div><div class="tab-label">Life</div></button>
+    <button class="tab-btn" onclick="switchTab('cmd',this)"><div class="tab-icon">👑</div><div class="tab-label">Cmdr</div></button>
+    <button class="tab-btn" onclick="switchTab('interact',this)"><div class="tab-icon">⚡</div><div class="tab-label">Combos</div></button>
+    <button class="tab-btn" onclick="switchTab('glossary',this)"><div class="tab-icon">📖</div><div class="tab-label">Words</div></button>
+    <button class="tab-btn" onclick="switchTab('dice',this)"><div class="tab-icon">🎲</div><div class="tab-label">Dice</div></button>
   </div>
 </div>
 
@@ -536,8 +590,10 @@ function switchTab(name,btn){
   document.getElementById('panel-'+name).classList.add('active');
   btn.classList.add('active');
   if(name==='life'){renderLife();renderManaPool();}
+  if(name==='cmd')renderCmdZone();
   if(name==='interact')renderInteractions('');
   if(name==='glossary')renderGlossary('');
+  if(name==='dice')renderHistory();
 }
 
 function endTurn(){
@@ -710,6 +766,259 @@ let toastTimeout;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>t.classList.remove('show'),2500);}
 
 // ═══════════════════════════════
+// COMMANDER ZONE
+// ═══════════════════════════════
+const CMD_STATUSES = ['Command Zone','Battlefield','Graveyard','Exile'];
+const CMD_STATUS_COLOURS = {
+  'Command Zone': {bg:'rgba(74,158,255,0.15)',border:'var(--accent-dark)',text:'var(--accent-light)',icon:'🏰'},
+  'Battlefield':  {bg:'rgba(39,174,96,0.15)', border:'rgba(39,174,96,0.5)', text:'#80d080',           icon:'⚔'},
+  'Graveyard':    {bg:'rgba(100,100,100,0.15)',border:'rgba(150,150,150,0.4)',text:'#aaaaaa',           icon:'💀'},
+  'Exile':        {bg:'rgba(192,57,43,0.15)', border:'rgba(192,57,43,0.5)', text:'#e07070',            icon:'✦'},
+};
+const MANA_COLOURS = [
+  {key:'W',bg:'radial-gradient(circle at 35% 35%,#f5e8b0,#c8aa5a)',text:'#3d2e00'},
+  {key:'U',bg:'radial-gradient(circle at 35% 35%,#6aabff,#1a5dbf)',text:'white'},
+  {key:'B',bg:'radial-gradient(circle at 35% 35%,#9a80aa,#2e1f3d)',text:'white'},
+  {key:'R',bg:'radial-gradient(circle at 35% 35%,#ff8a5c,#c02a00)',text:'white'},
+  {key:'G',bg:'radial-gradient(circle at 35% 35%,#5ec46a,#1a5c27)',text:'white'},
+  {key:'C',bg:'radial-gradient(circle at 35% 35%,#cccccc,#666)',   text:'white'},
+];
+
+let commanders = [
+  {
+    name: 'My Commander',
+    colours: [],
+    status: 'Command Zone',
+    castCount: 0,
+    opponents: [{name:'Opponent 1',dmg:0},{name:'Opponent 2',dmg:0},{name:'Opponent 3',dmg:0}],
+    log: [],
+  }
+];
+
+function cmdTax(castCount){ return castCount * 2; }
+
+function cmdCast(idx){
+  const c = commanders[idx];
+  c.castCount++;
+  const tax = cmdTax(c.castCount - 1);
+  const taxStr = tax > 0 ? ` (+{${tax}} tax paid)` : ' (no tax)';
+  c.log.unshift({ turn: turn, event: `Cast #${c.castCount}${taxStr}`, type:'cast' });
+  c.status = 'Battlefield';
+  renderCmdZone();
+  showToast(`${c.name} cast — tax next time: +{${cmdTax(c.castCount)}}`);
+}
+
+function cmdSetStatus(idx, status){
+  const c = commanders[idx];
+  const prev = c.status;
+  c.status = status;
+  if(status === 'Command Zone' && prev !== 'Command Zone'){
+    c.log.unshift({ turn: turn, event: `Returned to Command Zone from ${prev}`, type:'return' });
+  } else if(status === 'Graveyard'){
+    c.log.unshift({ turn: turn, event: 'Died — moved to Graveyard', type:'death' });
+  } else if(status === 'Exile'){
+    c.log.unshift({ turn: turn, event: 'Exiled', type:'exile' });
+  } else if(status === 'Battlefield'){
+    c.log.unshift({ turn: turn, event: 'Entered Battlefield', type:'cast' });
+  }
+  renderCmdZone();
+}
+
+function cmdAddDmg(cmdIdx, oppIdx){
+  commanders[cmdIdx].opponents[oppIdx].dmg++;
+  const dmg = commanders[cmdIdx].opponents[oppIdx].dmg;
+  const oppName = commanders[cmdIdx].opponents[oppIdx].name;
+  if(dmg === 21){
+    commanders[cmdIdx].log.unshift({ turn: turn, event: `${oppName} reached 21 commander damage — ELIMINATED`, type:'death' });
+    showToast(`${oppName} eliminated by commander damage!`);
+  }
+  renderCmdZone();
+}
+
+function cmdResetDmg(cmdIdx, oppIdx){
+  commanders[cmdIdx].opponents[oppIdx].dmg = 0;
+  renderCmdZone();
+}
+
+function cmdReset(idx){
+  commanders[idx].castCount = 0;
+  commanders[idx].status = 'Command Zone';
+  commanders[idx].opponents.forEach(o => o.dmg = 0);
+  commanders[idx].log = [];
+  renderCmdZone();
+  showToast('Commander reset');
+}
+
+function renderCmdZone(){
+  const el = document.getElementById('cmd-zone-container');
+  if(!el) return;
+
+  el.innerHTML = commanders.map((c, idx) => {
+    const tax = cmdTax(c.castCount);
+    const nextCastCost = c.castCount > 0 ? `+{${tax}} extra mana` : 'No tax yet';
+    const sc = CMD_STATUS_COLOURS[c.status];
+
+    // colour identity pips
+    const colourPips = MANA_COLOURS.map(m => {
+      const active = c.colours.includes(m.key);
+      return `<div onclick="cmdToggleColour(${idx},'${m.key}')"
+        style="width:28px;height:28px;border-radius:50%;background:${m.bg};
+        display:flex;align-items:center;justify-content:center;
+        font-size:0.6rem;font-weight:700;color:${m.text};cursor:pointer;
+        border:2px solid ${active?'rgba(255,255,255,0.7)':'rgba(255,255,255,0.15)'};
+        opacity:${active?1:0.35};transition:all 0.15s;">${m.key}</div>`;
+    }).join('');
+
+    // status buttons
+    const statusBtns = CMD_STATUSES.map(s => {
+      const col = CMD_STATUS_COLOURS[s];
+      const active = c.status === s;
+      return `<button onclick="cmdSetStatus(${idx},'${s}')"
+        style="flex:1;padding:7px 2px;font-family:'Palatino','Book Antiqua',Georgia,serif;
+        font-size:0.48rem;letter-spacing:0.05em;cursor:pointer;border-radius:4px;
+        background:${active?col.bg:'transparent'};
+        border:1.5px solid ${active?col.border:'rgba(255,255,255,0.1)'};
+        color:${active?col.text:'rgba(255,255,255,0.35)'};
+        text-align:center;line-height:1.3;transition:all 0.15s;">
+        ${col.icon}<br>${s.replace(' ','<br>')}
+      </button>`;
+    }).join('');
+
+    // opponent damage rows
+    const oppRows = c.opponents.map((opp, oi) => {
+      const dangerClass = opp.dmg >= 21 ? '#e07070' : opp.dmg >= 15 ? '#e67e22' : 'white';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(74,158,255,0.08);">
+        <input value="${opp.name}" onchange="commanders[${idx}].opponents[${oi}].name=this.value;renderCmdZone();"
+          style="flex:1;background:transparent;border:none;border-bottom:1px solid rgba(74,158,255,0.2);
+          color:white;font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.72rem;outline:none;padding:2px 0;"/>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button onclick="cmdResetDmg(${idx},${oi})"
+            style="width:22px;height:22px;border-radius:4px;background:var(--red-faint);
+            border:1px solid rgba(192,57,43,0.3);color:#e07070;font-size:0.7rem;cursor:pointer;line-height:1;">↺</button>
+          <button onclick="cmdAddDmg(${idx},${oi})" title="Add 1 commander damage"
+            style="display:flex;align-items:center;gap:5px;padding:4px 10px;
+            background:${opp.dmg>=21?'rgba(192,57,43,0.25)':opp.dmg>=15?'rgba(230,126,34,0.2)':'var(--accent-faint2)'};
+            border:1.5px solid ${opp.dmg>=21?'rgba(192,57,43,0.6)':opp.dmg>=15?'rgba(230,126,34,0.5)':'var(--border)'};
+            border-radius:6px;cursor:pointer;transition:all 0.15s;">
+            <span style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:1.1rem;font-weight:900;color:${dangerClass};">${opp.dmg}</span>
+            <span style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.48rem;color:rgba(255,255,255,0.4);letter-spacing:0.05em;">/ 21<br>tap+1</span>
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+
+    // log entries
+    const logHtml = c.log.length === 0
+      ? `<div style="text-align:center;padding:12px;color:rgba(255,255,255,0.25);font-style:italic;font-size:0.78rem;">No events yet</div>`
+      : c.log.slice(0,12).map(l => {
+          const col = l.type==='cast'?'var(--accent-light)':l.type==='death'?'#e07070':l.type==='exile'?'#e07070':'#c0d8f0';
+          const icon = l.type==='cast'?'⚔':l.type==='death'?'💀':l.type==='exile'?'✦':'🏰';
+          return `<div style="display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid rgba(74,158,255,0.06);">
+            <span style="flex-shrink:0;font-size:0.75rem;">${icon}</span>
+            <span style="flex:1;font-size:0.72rem;color:${col};line-height:1.4;">${l.event}</span>
+            <span style="flex-shrink:0;font-size:0.55rem;color:rgba(255,255,255,0.25);font-family:'Palatino','Book Antiqua',Georgia,serif;">T${l.turn}</span>
+          </div>`;
+        }).join('');
+
+    return `
+    <div style="background:var(--ink3);border:1.5px solid ${sc.border};border-radius:var(--radius);margin-bottom:12px;overflow:hidden;">
+
+      <!-- COMMANDER NAME + STATUS BANNER -->
+      <div style="background:${sc.bg};padding:12px 14px;border-bottom:1px solid ${sc.border};">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:1.2rem;">${sc.icon}</span>
+          <input value="${c.name}" onchange="commanders[${idx}].name=this.value;renderCmdZone();"
+            style="flex:1;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.3);
+            color:white;font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:1rem;
+            font-weight:700;outline:none;padding:2px 0;letter-spacing:0.04em;"
+            placeholder="Commander Name"/>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.48rem;color:rgba(255,255,255,0.4);letter-spacing:0.1em;text-transform:uppercase;">Colour Identity:</span>
+          ${colourPips}
+        </div>
+      </div>
+
+      <!-- STATUS BUTTONS -->
+      <div style="padding:10px 12px;border-bottom:1px solid rgba(74,158,255,0.1);">
+        <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:7px;">Current Location</div>
+        <div style="display:flex;gap:5px;">${statusBtns}</div>
+      </div>
+
+      <!-- CAST COUNT + TAX -->
+      <div style="padding:12px 14px;border-bottom:1px solid rgba(74,158,255,0.1);display:flex;align-items:center;gap:10px;">
+        <div style="flex:1;">
+          <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Times Cast</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:2.2rem;font-weight:900;color:var(--accent-light);line-height:1;">${c.castCount}</span>
+            <div>
+              <div style="font-size:0.72rem;color:rgba(255,255,255,0.5);line-height:1.4;">Next cast tax:</div>
+              <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.8rem;font-weight:700;color:${tax>0?'#e67e22':'var(--green)'};">${nextCostLabel(c.castCount)}</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;">
+          <button onclick="cmdCast(${idx})"
+            style="padding:8px 14px;background:linear-gradient(135deg,rgba(39,174,96,0.25),rgba(39,174,96,0.1));
+            border:1.5px solid rgba(39,174,96,0.5);border-radius:5px;color:white;
+            font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.62rem;
+            font-weight:700;letter-spacing:0.08em;cursor:pointer;white-space:nowrap;">
+            ⚔ Cast Commander
+          </button>
+          <button onclick="cmdReset(${idx})"
+            style="padding:6px 14px;background:var(--red-faint);
+            border:1px solid rgba(192,57,43,0.3);border-radius:5px;color:#e07070;
+            font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.52rem;
+            letter-spacing:0.08em;cursor:pointer;">
+            ↺ Reset All
+          </button>
+        </div>
+      </div>
+
+      <!-- COMMANDER DAMAGE TO OPPONENTS -->
+      <div style="padding:12px 14px;border-bottom:1px solid rgba(74,158,255,0.1);">
+        <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">⚔ Commander Damage Dealt To:</div>
+        ${oppRows}
+        <button onclick="cmdAddOpponent(${idx})" ${c.opponents.length>=5?'disabled':''}
+          style="margin-top:8px;width:100%;padding:6px;background:var(--accent-faint2);
+          border:1px dashed var(--border);border-radius:4px;color:rgba(255,255,255,0.4);
+          font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.52rem;
+          letter-spacing:0.08em;cursor:pointer;${c.opponents.length>=5?'opacity:0.3;':''}" >
+          ＋ Add Opponent
+        </button>
+      </div>
+
+      <!-- EVENT LOG -->
+      <div style="padding:12px 14px;">
+        <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">📜 Cast & Event Log</div>
+        ${logHtml}
+      </div>
+
+    </div>`;
+  }).join('');
+}
+
+function nextCostLabel(castCount){
+  const tax = cmdTax(castCount);
+  if(tax === 0) return 'Base cost only';
+  return `+{${tax}} extra mana`;
+}
+
+function cmdToggleColour(idx, key){
+  const c = commanders[idx];
+  const i = c.colours.indexOf(key);
+  if(i === -1) c.colours.push(key);
+  else c.colours.splice(i,1);
+  renderCmdZone();
+}
+
+function cmdAddOpponent(idx){
+  if(commanders[idx].opponents.length >= 5) return;
+  commanders[idx].opponents.push({name:`Opponent ${commanders[idx].opponents.length+1}`, dmg:0});
+  renderCmdZone();
+}
+
+// ═══════════════════════════════
 // FLOATING MANA POOL
 // ═══════════════════════════════
 let manaPool = {W:0,U:0,B:0,R:0,G:0,C:0};
@@ -739,7 +1048,141 @@ function renderManaPool(){
   });
 }
 
-renderLife();renderInteractions('');renderGlossary('');renderManaPool();
+// ═══════════════════════════════
+// DICE & COIN
+// ═══════════════════════════════
+const dieFaces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+let rollHistory = [];
+
+function rollDice(){
+  const r1 = Math.floor(Math.random()*6)+1;
+  const r2 = Math.floor(Math.random()*6)+1;
+  const total = r1 + r2;
+
+  // Animate dice
+  const d1 = document.getElementById('die1');
+  const d2 = document.getElementById('die2');
+  if(d1 && d2){
+    d1.style.transform='scale(0.85) rotate(-8deg)';
+    d2.style.transform='scale(0.85) rotate(8deg)';
+    setTimeout(()=>{
+      d1.textContent = dieFaces[r1-1];
+      d2.textContent = dieFaces[r2-1];
+      d1.style.transform='scale(1) rotate(0deg)';
+      d2.style.transform='scale(1) rotate(0deg)';
+      // Highlight doubles
+      const colour = r1===r2 ? '#ffd700' : 'var(--accent-dark)';
+      d1.style.borderColor = colour;
+      d2.style.borderColor = colour;
+    },120);
+  }
+
+  const totalEl = document.getElementById('dice-total');
+  if(totalEl){
+    const label = r1===r2 ? `Total: ${total} — DOUBLES! 🎉` : `Total: ${total}`;
+    totalEl.textContent = label;
+    totalEl.style.color = r1===r2 ? '#ffd700' : 'rgba(255,255,255,0.7)';
+  }
+
+  addHistory('🎲', `Rolled ${r1} + ${r2} = ${total}${r1===r2?' (Doubles!)':''}`);
+}
+
+function flipCoin(){
+  const heads = Math.random() < 0.5;
+  const coin = document.getElementById('coin-display');
+  const result = document.getElementById('coin-result');
+  if(coin){
+    coin.style.transform='scale(0.8)';
+    setTimeout(()=>{
+      coin.textContent = heads ? '👑' : '⚔';
+      coin.style.background = heads
+        ? 'radial-gradient(circle at 35% 35%,#f5e8b0,#c8aa5a)'
+        : 'radial-gradient(circle at 35% 35%,#8ab4cc,#2a5a7a)';
+      coin.style.transform='scale(1)';
+    },120);
+  }
+  if(result){
+    result.textContent = heads ? 'HEADS 👑' : 'TAILS ⚔';
+    result.style.color = heads ? '#ffd700' : 'var(--accent-light)';
+    result.style.fontSize = '0.85rem';
+    result.style.fontWeight = '700';
+  }
+  addHistory('🪙', heads ? 'Coin flip — HEADS' : 'Coin flip — TAILS');
+}
+
+function rollInitiative(){
+  const activePlayers = players.filter(p => !p.eliminated);
+  if(activePlayers.length < 2){ showToast('Need at least 2 players'); return; }
+
+  // Roll D20 for each, handle ties by re-rolling
+  let rolls = activePlayers.map(p => ({ name: p.name, roll: Math.floor(Math.random()*20)+1 }));
+
+  // Detect and re-roll ties
+  let attempts = 0;
+  while(attempts < 10){
+    const values = rolls.map(r => r.roll);
+    const hasTie = values.length !== new Set(values).size;
+    if(!hasTie) break;
+    // Re-roll only tied players
+    const counts = {};
+    values.forEach(v => counts[v] = (counts[v]||0)+1);
+    rolls = rolls.map(r => counts[r.roll] > 1 ? {...r, roll: Math.floor(Math.random()*20)+1, rerolled: true} : r);
+    attempts++;
+  }
+
+  // Sort highest first
+  rolls.sort((a,b) => b.roll - a.roll);
+
+  const container = document.getElementById('initiative-results');
+  if(container){
+    container.innerHTML = rolls.map((r, i) => {
+      const medal = i===0 ? '🥇' : i===1 ? '🥈' : i===2 ? '🥉' : `${i+1}.`;
+      const bg = i===0 ? 'rgba(255,215,0,0.1)' : 'var(--accent-faint2)';
+      const border = i===0 ? 'rgba(255,215,0,0.4)' : 'var(--border)';
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:${bg};border:1px solid ${border};border-radius:5px;margin-bottom:5px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.1rem;">${medal}</span>
+          <span style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.82rem;color:white;font-weight:${i===0?'700':'400'};">${r.name}</span>
+        </div>
+        <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:1.1rem;font-weight:900;color:${i===0?'#ffd700':'var(--accent-light)'};">${r.roll}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const summary = rolls.map((r,i) => `${i+1}. ${r.name} (${r.roll})`).join(' → ');
+  addHistory('⚔', `Initiative: ${summary}`);
+  showToast(`${rolls[0].name} goes first!`);
+}
+
+function addHistory(icon, text){
+  const time = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  rollHistory.unshift({ icon, text, time });
+  if(rollHistory.length > 20) rollHistory.pop();
+  renderHistory();
+}
+
+function renderHistory(){
+  const el = document.getElementById('roll-history');
+  if(!el) return;
+  if(rollHistory.length === 0){
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.25);font-style:italic;font-size:0.82rem;">No rolls yet</div>';
+    return;
+  }
+  el.innerHTML = rollHistory.map(r => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--accent-faint2);border:1px solid var(--border);border-radius:5px;">
+      <span style="font-size:1rem;flex-shrink:0;">${r.icon}</span>
+      <span style="flex:1;font-size:0.78rem;color:white;line-height:1.35;">${r.text}</span>
+      <span style="font-size:0.6rem;color:rgba(255,255,255,0.3);flex-shrink:0;font-family:'Palatino','Book Antiqua',Georgia,serif;">${r.time}</span>
+    </div>`).join('');
+}
+
+function clearHistory(){
+  rollHistory = [];
+  renderHistory();
+  showToast('History cleared');
+}
+
+renderLife();renderInteractions('');renderGlossary('');renderManaPool();renderCmdZone();
 
 // Register Service Worker for offline use
 if ('serviceWorker' in navigator) {
