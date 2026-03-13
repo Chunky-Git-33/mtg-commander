@@ -219,6 +219,10 @@ html, body { height:100%; font-family:'Palatino','Book Antiqua',Georgia,serif; b
       <div class="header-sub">New Player Companion</div>
     </div>
     <div class="turn-badge">TURN<span id="turn-num">1</span></div>
+    <button onclick="forceUpdate()" title="Clear cache and reload latest version"
+      style="background:rgba(74,158,255,0.08);border:1px solid var(--accent-dark);border-radius:4px;
+      padding:4px 8px;color:rgba(74,158,255,0.6);font-size:0.55rem;cursor:pointer;
+      font-family:'Palatino','Book Antiqua',Georgia,serif;letter-spacing:0.05em;">↻ Update</button>
   </div>
 
   <div class="content">
@@ -596,7 +600,17 @@ function switchTab(name,btn){
   if(name==='dice')renderHistory();
 }
 
-function endTurn(){
+function forceUpdate(){
+  if('caches' in window){
+    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+      .then(() => {
+        showToast('Cache cleared — reloading...');
+        setTimeout(() => window.location.reload(true), 800);
+      });
+  } else {
+    window.location.reload(true);
+  }
+}
   turn++;
   document.getElementById('turn-num').textContent=turn;
   document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
