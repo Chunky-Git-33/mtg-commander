@@ -591,13 +591,14 @@ let players = [
 function switchTab(name,btn){
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
+  const panel = document.getElementById('panel-'+name);
+  if(panel) panel.classList.add('active');
   btn.classList.add('active');
-  if(name==='life'){renderLife();renderManaPool();}
-  if(name==='cmd')renderCmdZone();
-  if(name==='interact')renderInteractions('');
-  if(name==='glossary')renderGlossary('');
-  if(name==='dice')renderHistory();
+  try { if(name==='life'){renderLife();renderManaPool();} } catch(e){}
+  try { if(name==='cmd')renderCmdZone(); } catch(e){}
+  try { if(name==='interact')renderInteractions(''); } catch(e){}
+  try { if(name==='glossary')renderGlossary(''); } catch(e){}
+  try { if(name==='dice')renderHistory(); } catch(e){}
 }
 
 function forceUpdate(){
@@ -1196,7 +1197,13 @@ function clearHistory(){
   showToast('History cleared');
 }
 
-renderLife();renderInteractions('');renderGlossary('');renderManaPool();renderCmdZone();
+document.addEventListener('DOMContentLoaded', function(){
+  try { renderLife(); } catch(e){ console.error('renderLife failed:', e); }
+  try { renderInteractions(''); } catch(e){ console.error('renderInteractions failed:', e); }
+  try { renderGlossary(''); } catch(e){ console.error('renderGlossary failed:', e); }
+  try { renderManaPool(); } catch(e){ console.error('renderManaPool failed:', e); }
+  try { renderCmdZone(); } catch(e){ console.error('renderCmdZone failed:', e); }
+});
 
 // Register Service Worker for offline use
 if ('serviceWorker' in navigator) {

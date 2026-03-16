@@ -1,7 +1,7 @@
 // Commander Companion — Service Worker v7
 // Network-first: always fetches fresh when online, cache fallback when offline.
 
-const CACHE_NAME = 'commander-companion-v7';
+const CACHE_NAME = 'commander-companion-v8';
 const BASE = '/mtg-commander';
 
 const ASSETS_TO_CACHE = [
