@@ -612,6 +612,8 @@ function forceUpdate(){
     window.location.reload(true);
   }
 }
+
+function endTurn(){
   turn++;
   document.getElementById('turn-num').textContent=turn;
   document.querySelector('.content').scrollTo({top:0,behavior:'smooth'});
@@ -988,7 +990,7 @@ function renderCmdZone(){
       + '<div style="padding:12px 14px;border-bottom:1px solid rgba(74,158,255,0.1);">'
       + '<div style="font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">⚔ Commander Damage Dealt To:</div>'
       + oppRows
-      + '<button class="cmd-add-opp-btn" data-cidx="' + idx + '" ' + (c.opponents.length>=5?'disabled':'') + '"'
+      + '<button class="cmd-add-opp-btn" data-cidx="' + idx + '" ' + (c.opponents.length>=5?'disabled':'')
       + ' style="margin-top:8px;width:100%;padding:6px;background:var(--accent-faint2);'
       + 'border:1px dashed var(--border);border-radius:4px;color:rgba(255,255,255,0.4);'
       + 'font-size:0.52rem;letter-spacing:0.08em;cursor:pointer;' + (c.opponents.length>=5?'opacity:0.3;':'') + '">＋ Add Opponent</button>'
