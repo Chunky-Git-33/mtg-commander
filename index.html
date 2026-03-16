@@ -868,149 +868,169 @@ function renderCmdZone(){
   const el = document.getElementById('cmd-zone-container');
   if(!el) return;
 
-  el.innerHTML = commanders.map((c, idx) => {
+  let html = '';
+  commanders.forEach(function(c, idx){
     const tax = cmdTax(c.castCount);
-    const nextCastCost = c.castCount > 0 ? `+{${tax}} extra mana` : 'No tax yet';
     const sc = CMD_STATUS_COLOURS[c.status];
 
-    // colour identity pips
-    const colourPips = MANA_COLOURS.map(m => {
+    // colour identity pips — use data attributes, no inline onclick with quotes
+    let colourPips = '';
+    MANA_COLOURS.forEach(function(m){
       const active = c.colours.includes(m.key);
-      return `<div onclick="cmdToggleColour(${idx},'${m.key}')"
-        style="width:28px;height:28px;border-radius:50%;background:${m.bg};
-        display:flex;align-items:center;justify-content:center;
-        font-size:0.6rem;font-weight:700;color:${m.text};cursor:pointer;
-        border:2px solid ${active?'rgba(255,255,255,0.7)':'rgba(255,255,255,0.15)'};
-        opacity:${active?1:0.35};transition:all 0.15s;">${m.key}</div>`;
-    }).join('');
+      colourPips += '<div class="cmd-colour-pip"'
+        + ' data-cidx="' + idx + '" data-ckey="' + m.key + '"'
+        + ' style="width:28px;height:28px;border-radius:50%;background:' + m.bg + ';'
+        + 'display:flex;align-items:center;justify-content:center;'
+        + 'font-size:0.6rem;font-weight:700;color:' + m.text + ';cursor:pointer;'
+        + 'border:2px solid ' + (active ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.15)') + ';'
+        + 'opacity:' + (active ? '1' : '0.35') + ';transition:all 0.15s;">' + m.key + '</div>';
+    });
 
-    // status buttons
-    const statusBtns = CMD_STATUSES.map(s => {
+    // status buttons — use data attributes
+    let statusBtns = '';
+    CMD_STATUSES.forEach(function(s){
       const col = CMD_STATUS_COLOURS[s];
       const active = c.status === s;
-      return `<button onclick="cmdSetStatus(${idx},'${s}')"
-        style="flex:1;padding:7px 2px;font-family:'Palatino','Book Antiqua',Georgia,serif;
-        font-size:0.48rem;letter-spacing:0.05em;cursor:pointer;border-radius:4px;
-        background:${active?col.bg:'transparent'};
-        border:1.5px solid ${active?col.border:'rgba(255,255,255,0.1)'};
-        color:${active?col.text:'rgba(255,255,255,0.35)'};
-        text-align:center;line-height:1.3;transition:all 0.15s;">
-        ${col.icon}<br>${s.replace(' ','<br>')}
-      </button>`;
-    }).join('');
+      statusBtns += '<button class="cmd-status-btn"'
+        + ' data-cidx="' + idx + '" data-status="' + s + '"'
+        + ' style="flex:1;padding:7px 2px;font-size:0.48rem;letter-spacing:0.05em;cursor:pointer;border-radius:4px;'
+        + 'background:' + (active ? col.bg : 'transparent') + ';'
+        + 'border:1.5px solid ' + (active ? col.border : 'rgba(255,255,255,0.1)') + ';'
+        + 'color:' + (active ? col.text : 'rgba(255,255,255,0.35)') + ';'
+        + 'text-align:center;line-height:1.3;transition:all 0.15s;">'
+        + col.icon + '<br>' + s.replace(' ','<br>')
+        + '</button>';
+    });
 
-    // opponent damage rows
-    const oppRows = c.opponents.map((opp, oi) => {
-      const dangerClass = opp.dmg >= 21 ? '#e07070' : opp.dmg >= 15 ? '#e67e22' : 'white';
-      return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(74,158,255,0.08);">
-        <input value="${opp.name}" onchange="commanders[${idx}].opponents[${oi}].name=this.value;renderCmdZone();"
-          style="flex:1;background:transparent;border:none;border-bottom:1px solid rgba(74,158,255,0.2);
-          color:white;font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.72rem;outline:none;padding:2px 0;"/>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <button onclick="cmdResetDmg(${idx},${oi})"
-            style="width:22px;height:22px;border-radius:4px;background:var(--red-faint);
-            border:1px solid rgba(192,57,43,0.3);color:#e07070;font-size:0.7rem;cursor:pointer;line-height:1;">↺</button>
-          <button onclick="cmdAddDmg(${idx},${oi})" title="Add 1 commander damage"
-            style="display:flex;align-items:center;gap:5px;padding:4px 10px;
-            background:${opp.dmg>=21?'rgba(192,57,43,0.25)':opp.dmg>=15?'rgba(230,126,34,0.2)':'var(--accent-faint2)'};
-            border:1.5px solid ${opp.dmg>=21?'rgba(192,57,43,0.6)':opp.dmg>=15?'rgba(230,126,34,0.5)':'var(--border)'};
-            border-radius:6px;cursor:pointer;transition:all 0.15s;">
-            <span style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:1.1rem;font-weight:900;color:${dangerClass};">${opp.dmg}</span>
-            <span style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.48rem;color:rgba(255,255,255,0.4);letter-spacing:0.05em;">/ 21<br>tap+1</span>
-          </button>
-        </div>
-      </div>`;
-    }).join('');
+    // opponent rows — use data attributes
+    let oppRows = '';
+    c.opponents.forEach(function(opp, oi){
+      const dmgCol = opp.dmg >= 21 ? '#e07070' : opp.dmg >= 15 ? '#e67e22' : 'white';
+      const dmgBg  = opp.dmg >= 21 ? 'rgba(192,57,43,0.25)' : opp.dmg >= 15 ? 'rgba(230,126,34,0.2)' : 'var(--accent-faint2)';
+      const dmgBdr = opp.dmg >= 21 ? 'rgba(192,57,43,0.6)' : opp.dmg >= 15 ? 'rgba(230,126,34,0.5)' : 'var(--border)';
+      oppRows += '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(74,158,255,0.08);">'
+        + '<input class="cmd-opp-name" data-cidx="' + idx + '" data-oidx="' + oi + '" value="' + opp.name + '"'
+        + ' style="flex:1;background:transparent;border:none;border-bottom:1px solid rgba(74,158,255,0.2);'
+        + 'color:white;font-size:0.72rem;outline:none;padding:2px 0;"/>'
+        + '<div style="display:flex;align-items:center;gap:6px;">'
+        + '<button class="cmd-dmg-reset" data-cidx="' + idx + '" data-oidx="' + oi + '"'
+        + ' style="width:22px;height:22px;border-radius:4px;background:var(--red-faint);'
+        + 'border:1px solid rgba(192,57,43,0.3);color:#e07070;font-size:0.7rem;cursor:pointer;line-height:1;">↺</button>'
+        + '<button class="cmd-dmg-add" data-cidx="' + idx + '" data-oidx="' + oi + '"'
+        + ' style="display:flex;align-items:center;gap:5px;padding:4px 10px;'
+        + 'background:' + dmgBg + ';border:1.5px solid ' + dmgBdr + ';'
+        + 'border-radius:6px;cursor:pointer;transition:all 0.15s;">'
+        + '<span style="font-size:1.1rem;font-weight:900;color:' + dmgCol + ';">' + opp.dmg + '</span>'
+        + '<span style="font-size:0.48rem;color:rgba(255,255,255,0.4);">/ 21<br>tap+1</span>'
+        + '</button>'
+        + '</div></div>';
+    });
 
     // log entries
-    const logHtml = c.log.length === 0
-      ? `<div style="text-align:center;padding:12px;color:rgba(255,255,255,0.25);font-style:italic;font-size:0.78rem;">No events yet</div>`
-      : c.log.slice(0,12).map(l => {
-          const col = l.type==='cast'?'var(--accent-light)':l.type==='death'?'#e07070':l.type==='exile'?'#e07070':'#c0d8f0';
-          const icon = l.type==='cast'?'⚔':l.type==='death'?'💀':l.type==='exile'?'✦':'🏰';
-          return `<div style="display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid rgba(74,158,255,0.06);">
-            <span style="flex-shrink:0;font-size:0.75rem;">${icon}</span>
-            <span style="flex:1;font-size:0.72rem;color:${col};line-height:1.4;">${l.event}</span>
-            <span style="flex-shrink:0;font-size:0.55rem;color:rgba(255,255,255,0.25);font-family:'Palatino','Book Antiqua',Georgia,serif;">T${l.turn}</span>
-          </div>`;
-        }).join('');
+    let logHtml = '';
+    if(c.log.length === 0){
+      logHtml = '<div style="text-align:center;padding:12px;color:rgba(255,255,255,0.25);font-style:italic;font-size:0.78rem;">No events yet</div>';
+    } else {
+      c.log.slice(0,12).forEach(function(l){
+        const col = l.type==='cast' ? 'var(--accent-light)' : l.type==='death' ? '#e07070' : l.type==='exile' ? '#e07070' : '#c0d8f0';
+        const icon = l.type==='cast' ? '⚔' : l.type==='death' ? '💀' : l.type==='exile' ? '✦' : '🏰';
+        logHtml += '<div style="display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid rgba(74,158,255,0.06);">'
+          + '<span style="flex-shrink:0;font-size:0.75rem;">' + icon + '</span>'
+          + '<span style="flex:1;font-size:0.72rem;color:' + col + ';line-height:1.4;">' + l.event + '</span>'
+          + '<span style="flex-shrink:0;font-size:0.55rem;color:rgba(255,255,255,0.25);">T' + l.turn + '</span>'
+          + '</div>';
+      });
+    }
 
-    return `
-    <div style="background:var(--ink3);border:1.5px solid ${sc.border};border-radius:var(--radius);margin-bottom:12px;overflow:hidden;">
+    const taxColour = tax > 0 ? '#e67e22' : 'var(--green)';
 
-      <!-- COMMANDER NAME + STATUS BANNER -->
-      <div style="background:${sc.bg};padding:12px 14px;border-bottom:1px solid ${sc.border};">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-          <span style="font-size:1.2rem;">${sc.icon}</span>
-          <input value="${c.name}" onchange="commanders[${idx}].name=this.value;renderCmdZone();"
-            style="flex:1;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.3);
-            color:white;font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:1rem;
-            font-weight:700;outline:none;padding:2px 0;letter-spacing:0.04em;"
-            placeholder="Commander Name"/>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <span style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.48rem;color:rgba(255,255,255,0.4);letter-spacing:0.1em;text-transform:uppercase;">Colour Identity:</span>
-          ${colourPips}
-        </div>
-      </div>
+    html += '<div style="background:var(--ink3);border:1.5px solid ' + sc.border + ';border-radius:var(--radius);margin-bottom:12px;overflow:hidden;">'
 
-      <!-- STATUS BUTTONS -->
-      <div style="padding:10px 12px;border-bottom:1px solid rgba(74,158,255,0.1);">
-        <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:7px;">Current Location</div>
-        <div style="display:flex;gap:5px;">${statusBtns}</div>
-      </div>
+      // header
+      + '<div style="background:' + sc.bg + ';padding:12px 14px;border-bottom:1px solid ' + sc.border + ';">'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
+      + '<span style="font-size:1.2rem;">' + sc.icon + '</span>'
+      + '<input class="cmd-name-input" data-cidx="' + idx + '" value="' + c.name + '" placeholder="Commander Name"'
+      + ' style="flex:1;background:transparent;border:none;border-bottom:1.5px solid rgba(255,255,255,0.3);'
+      + 'color:white;font-size:1rem;font-weight:700;outline:none;padding:2px 0;letter-spacing:0.04em;"/>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:6px;">'
+      + '<span style="font-size:0.48rem;color:rgba(255,255,255,0.4);letter-spacing:0.1em;text-transform:uppercase;">Colour Identity:</span>'
+      + colourPips
+      + '</div></div>'
 
-      <!-- CAST COUNT + TAX -->
-      <div style="padding:12px 14px;border-bottom:1px solid rgba(74,158,255,0.1);display:flex;align-items:center;gap:10px;">
-        <div style="flex:1;">
-          <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Times Cast</div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:2.2rem;font-weight:900;color:var(--accent-light);line-height:1;">${c.castCount}</span>
-            <div>
-              <div style="font-size:0.72rem;color:rgba(255,255,255,0.5);line-height:1.4;">Next cast tax:</div>
-              <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.8rem;font-weight:700;color:${tax>0?'#e67e22':'var(--green)'};">${nextCostLabel(c.castCount)}</div>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:5px;">
-          <button onclick="cmdCast(${idx})"
-            style="padding:8px 14px;background:linear-gradient(135deg,rgba(39,174,96,0.25),rgba(39,174,96,0.1));
-            border:1.5px solid rgba(39,174,96,0.5);border-radius:5px;color:white;
-            font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.62rem;
-            font-weight:700;letter-spacing:0.08em;cursor:pointer;white-space:nowrap;">
-            ⚔ Cast Commander
-          </button>
-          <button onclick="cmdReset(${idx})"
-            style="padding:6px 14px;background:var(--red-faint);
-            border:1px solid rgba(192,57,43,0.3);border-radius:5px;color:#e07070;
-            font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.52rem;
-            letter-spacing:0.08em;cursor:pointer;">
-            ↺ Reset All
-          </button>
-        </div>
-      </div>
+      // status
+      + '<div style="padding:10px 12px;border-bottom:1px solid rgba(74,158,255,0.1);">'
+      + '<div style="font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:7px;">Current Location</div>'
+      + '<div style="display:flex;gap:5px;">' + statusBtns + '</div>'
+      + '</div>'
 
-      <!-- COMMANDER DAMAGE TO OPPONENTS -->
-      <div style="padding:12px 14px;border-bottom:1px solid rgba(74,158,255,0.1);">
-        <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">⚔ Commander Damage Dealt To:</div>
-        ${oppRows}
-        <button onclick="cmdAddOpponent(${idx})" ${c.opponents.length>=5?'disabled':''}
-          style="margin-top:8px;width:100%;padding:6px;background:var(--accent-faint2);
-          border:1px dashed var(--border);border-radius:4px;color:rgba(255,255,255,0.4);
-          font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.52rem;
-          letter-spacing:0.08em;cursor:pointer;${c.opponents.length>=5?'opacity:0.3;':''}" >
-          ＋ Add Opponent
-        </button>
-      </div>
+      // cast + tax
+      + '<div style="padding:12px 14px;border-bottom:1px solid rgba(74,158,255,0.1);display:flex;align-items:center;gap:10px;">'
+      + '<div style="flex:1;">'
+      + '<div style="font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Times Cast</div>'
+      + '<div style="display:flex;align-items:center;gap:10px;">'
+      + '<span style="font-size:2.2rem;font-weight:900;color:var(--accent-light);line-height:1;">' + c.castCount + '</span>'
+      + '<div><div style="font-size:0.72rem;color:rgba(255,255,255,0.5);line-height:1.4;">Next cast tax:</div>'
+      + '<div style="font-size:0.8rem;font-weight:700;color:' + taxColour + ';">' + nextCostLabel(c.castCount) + '</div>'
+      + '</div></div></div>'
+      + '<div style="display:flex;flex-direction:column;gap:5px;">'
+      + '<button class="cmd-cast-btn" data-cidx="' + idx + '"'
+      + ' style="padding:8px 14px;background:linear-gradient(135deg,rgba(39,174,96,0.25),rgba(39,174,96,0.1));'
+      + 'border:1.5px solid rgba(39,174,96,0.5);border-radius:5px;color:white;'
+      + 'font-size:0.62rem;font-weight:700;letter-spacing:0.08em;cursor:pointer;white-space:nowrap;">⚔ Cast Commander</button>'
+      + '<button class="cmd-reset-btn" data-cidx="' + idx + '"'
+      + ' style="padding:6px 14px;background:var(--red-faint);border:1px solid rgba(192,57,43,0.3);'
+      + 'border-radius:5px;color:#e07070;font-size:0.52rem;letter-spacing:0.08em;cursor:pointer;">↺ Reset All</button>'
+      + '</div></div>'
 
-      <!-- EVENT LOG -->
-      <div style="padding:12px 14px;">
-        <div style="font-family:'Palatino','Book Antiqua',Georgia,serif;font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">📜 Cast & Event Log</div>
-        ${logHtml}
-      </div>
+      // opponents
+      + '<div style="padding:12px 14px;border-bottom:1px solid rgba(74,158,255,0.1);">'
+      + '<div style="font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">⚔ Commander Damage Dealt To:</div>'
+      + oppRows
+      + '<button class="cmd-add-opp-btn" data-cidx="' + idx + '" ' + (c.opponents.length>=5?'disabled':'') + '"'
+      + ' style="margin-top:8px;width:100%;padding:6px;background:var(--accent-faint2);'
+      + 'border:1px dashed var(--border);border-radius:4px;color:rgba(255,255,255,0.4);'
+      + 'font-size:0.52rem;letter-spacing:0.08em;cursor:pointer;' + (c.opponents.length>=5?'opacity:0.3;':'') + '">＋ Add Opponent</button>'
+      + '</div>'
 
-    </div>`;
-  }).join('');
+      // log
+      + '<div style="padding:12px 14px;">'
+      + '<div style="font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;">📜 Cast &amp; Event Log</div>'
+      + logHtml
+      + '</div></div>';
+  });
+
+  el.innerHTML = html;
+
+  // Attach all events via delegation — no inline handlers needed
+  el.querySelectorAll('.cmd-colour-pip').forEach(function(pip){
+    pip.addEventListener('click', function(){ cmdToggleColour(+this.dataset.cidx, this.dataset.ckey); });
+  });
+  el.querySelectorAll('.cmd-status-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ cmdSetStatus(+this.dataset.cidx, this.dataset.status); });
+  });
+  el.querySelectorAll('.cmd-dmg-add').forEach(function(btn){
+    btn.addEventListener('click', function(){ cmdAddDmg(+this.dataset.cidx, +this.dataset.oidx); });
+  });
+  el.querySelectorAll('.cmd-dmg-reset').forEach(function(btn){
+    btn.addEventListener('click', function(){ cmdResetDmg(+this.dataset.cidx, +this.dataset.oidx); });
+  });
+  el.querySelectorAll('.cmd-cast-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ cmdCast(+this.dataset.cidx); });
+  });
+  el.querySelectorAll('.cmd-reset-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ cmdReset(+this.dataset.cidx); });
+  });
+  el.querySelectorAll('.cmd-add-opp-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ cmdAddOpponent(+this.dataset.cidx); });
+  });
+  el.querySelectorAll('.cmd-name-input').forEach(function(inp){
+    inp.addEventListener('change', function(){ commanders[+this.dataset.cidx].name = this.value; });
+  });
+  el.querySelectorAll('.cmd-opp-name').forEach(function(inp){
+    inp.addEventListener('change', function(){ commanders[+this.dataset.cidx].opponents[+this.dataset.oidx].name = this.value; renderCmdZone(); });
+  });
 }
 
 function nextCostLabel(castCount){

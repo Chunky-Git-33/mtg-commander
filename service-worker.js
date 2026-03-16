@@ -2,7 +2,7 @@
 // index.html is NEVER cached — always fetched fresh from network.
 // Icons and manifest only are cached for offline use.
 
-const CACHE_NAME = 'commander-companion-v9';
+const CACHE_NAME = 'commander-companion-v10';
 const BASE = '/mtg-commander';
 
 const CACHE_ONLY = [
